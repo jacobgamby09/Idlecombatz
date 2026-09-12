@@ -44,6 +44,14 @@ Power Strike-screenshot kan reproduceres i dev-versionen med `window.__IDLECOMBA
 4. Skeletternes source-rækker havde forskellig baseline. Metadata retter pivots i den normaliserede runtime-tekstur.
 5. Billedværktøjets første VFX-eksporter indeholdt bagt checkerboard. Kun den efterfølgende verificerede RGBA-fil bruges i scenen.
 
+## Opfølgning: pauser i combat (2026-09-12)
+
+Brugerens mobiloptagelse viste, at heroen kunne stå stille, mens enemies stadig bevægede sig. Simulationen reproducerede op til 5,02 sekunders ventetid med et angreb klar og en enemy lige ved melee-grænsen. Bevægelsen stoppede præcis ved angrebsafstand 23; afrunding kunne efterlade en afstand på `23.000000000000004`, og figurernes indbyrdes skub kunne holde dem lige udenfor grænsen.
+
+Bevægelsen sigter nu en halv intern pixel indenfor melee-grænsen, og afstandssammenligningen tolererer numerisk afrunding. Rettelsen gælder både hero og skeletter. Attack-cooldowns, animationstiming og damage er uændrede.
+
+Tre nye regressionstests fejlede før rettelsen og passerer efter den: afrunding ved grænsen samt tre minutters kamp med henholdsvis Power Strike og Heal. I disse forløb er længste ventetid med angreb klar og en enemy indenfor 23,1 nu ét simulationstick (1/60 sekund). Alle syv tests og production-build passerer. Lokal Chromium-kontrol ved 390 × 844 bekræfter rendering og fortsat kamp uden registrerede browserfejl; dette er ikke en test på en fysisk iPhone.
+
 ## Visuel vurdering mod referencen
 
 Den mørke violetpalette, dungeonens sidevægge og varme fakler, den lille stålhero, skeletternes relative størrelse, de skarpe pixelkanter og den orange sværdbue er samlet i den viste komposition. UI'et følger de mørke rammer, små rasterikoner og fire navigationselementer.

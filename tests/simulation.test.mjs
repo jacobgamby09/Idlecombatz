@@ -68,3 +68,36 @@ test('A dead hero stops combat and respawns into fresh enemies', () => {
   assert.equal(sim.hero.hp, DEMO.heroHp);
   assert.equal(sim.actors.length, 6);
 });
+
+test('Both combatants can attack at a boundary with floating-point rounding', () => {
+  const sim = new CombatSimulation();
+  const enemy = sim.actors[1];
+  enemy.x = sim.hero.x + DEMO.attackRange + 1e-12;
+  enemy.y = sim.hero.y;
+  sim.hero.attackWait = enemy.attackWait = 0;
+  sim.step(1 / 60);
+  assert.equal(sim.hero.state, 'attack');
+  assert.equal(enemy.state, 'attack');
+  const hits = advance(sim, DEMO.hitTime + 1 / 60).filter(e => e.type === 'hit');
+  assert.ok(hits.some(e => e.source === sim.hero.id && e.target === enemy.id));
+  assert.ok(hits.some(e => e.source === enemy.id && e.target === sim.hero.id));
+});
+
+for (const ability of ['power-strike', 'heal']) {
+  test(`Crowded combat does not stall a ready hero at melee range (${ability})`, () => {
+    const sim = new CombatSimulation();
+    sim.setAbility(ability);
+    let waiting = 0;
+    for (let tick = 0; tick < 180 * 60; tick++) {
+      sim.step(1 / 60);
+      sim.drainEvents();
+      const hero = sim.hero;
+      const nearest = Math.min(...sim.actors
+        .filter(a => a.kind === 'skeleton' && a.hp > 0)
+        .map(a => Math.hypot(a.x - hero.x, a.y - hero.y)));
+      waiting = hero.hp > 0 && hero.attackWait === 0 && hero.state !== 'attack'
+        && nearest <= DEMO.attackRange + 0.1 ? waiting + 1 : 0;
+      assert.ok(waiting <= 15, `Ready hero stalled near a mob at ${sim.elapsed.toFixed(2)}s`);
+    }
+  });
+}

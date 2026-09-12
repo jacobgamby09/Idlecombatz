@@ -34,6 +34,11 @@ export const DEMO = {
   respawnSeconds: 5, powerCooldown: 6, healCooldown: 10,
 } as const;
 
+// Arrive slightly inside melee range so crowd separation cannot keep an actor
+// walking on the boundary. The epsilon only absorbs floating-point rounding.
+const MELEE_ARRIVAL_MARGIN = 0.5;
+const DISTANCE_EPSILON = 1e-6;
+
 /** A small deterministic combat study. No persistence, upgrade or floor systems. */
 export class CombatSimulation {
   actors: Actor[] = [];
@@ -162,10 +167,10 @@ export class CombatSimulation {
       const dy = target.y - actor.y;
       const distance = Math.hypot(dx, dy);
       if (Math.abs(dx) > 2) actor.facing = dx >= 0 ? 1 : -1;
-      if (distance > DEMO.attackRange) {
+      if (distance > DEMO.attackRange + DISTANCE_EPSILON) {
         this.changeState(actor, 'walk');
         const speed = actor.kind === 'hero' ? DEMO.heroSpeed : DEMO.skeletonSpeed;
-        const travel = Math.min(speed * dt, distance - DEMO.attackRange);
+        const travel = Math.min(speed * dt, distance - (DEMO.attackRange - MELEE_ARRIVAL_MARGIN));
         actor.x += dx / distance * travel;
         actor.y += dy / distance * travel;
       } else if (actor.attackWait === 0) {

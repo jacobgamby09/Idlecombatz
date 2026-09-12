@@ -17,7 +17,7 @@ npm run dev
 npm run build
 ```
 
-Kør simulationens fire tests med `npm test`. Både de fire tests og `npm run build` passerer. Tests dækker Heal/cooldown, kill/reward, reset og hero-respawn.
+Kør simulationens syv tests med `npm test`. Tests dækker Heal/cooldown, kill/reward, reset, hero-respawn og fastlåsning ved angrebsafstand, både isoleret og i tre minutters kamp med hver ability.
 
 ## Den første prøve
 
