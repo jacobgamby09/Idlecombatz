@@ -12,3 +12,8 @@ artifacts/*
 !artifacts/scene-360x640.png
 !artifacts/scene-390x844.png
 !artifacts/scene-motion.webm
+!artifacts/farming-upgrades-360.png
+!artifacts/farming-upgrades-390.png
+!artifacts/farming-upgrades-796.png
+!artifacts/farming-upgrades-desktop.png
+!artifacts/farming-loop.webm

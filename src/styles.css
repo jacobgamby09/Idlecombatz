@@ -250,3 +250,33 @@ dialog::backdrop { background: #08060dd6; backdrop-filter: blur(3px); }
   .just-cast { animation: none; }
   dialog::backdrop { backdrop-filter: none; }
 }
+
+/* Upgrades occupy their own row: purchases never cover the fighting hero. */
+.game-shell.upgrades-open { grid-template-rows: var(--hud-height) minmax(0, 1fr) 262px var(--nav-height); }
+.upgrades-open .ability-dock, .upgrades-open .nav-gap { display: none; }
+.upgrades-open .detail-panel { position: relative; grid-row: 3; left: auto; right: auto; bottom: auto; max-height: none; min-height: 0; margin: 0 4px 4px; }
+.upgrades-open .bottom-nav { grid-row: 4; }
+.upgrades-open .detail-content { padding: 2px 8px 6px; }
+.upgrades-open .detail-heading { min-height: 44px; }
+.upgrade-list { display: grid; }
+.upgrade-row { display: flex; align-items: center; gap: 7px; min-height: 52px; border-bottom: 1px solid #3d3046; }
+.upgrade-row:last-child { border: 0; }
+.upgrade-symbol .pixel-icon { width: 30px; height: 30px; }
+.upgrade-copy { min-width: 0; flex: 1; }
+.upgrade-copy > div { display: flex; align-items: baseline; gap: 7px; }
+.upgrade-copy strong { font-size: 11px; font-weight: 600; }
+.upgrade-level { color: #91849d; font-size: 9px; }
+.upgrade-effect { display: block; color: #f1d08f; font-size: 12px; font-variant-numeric: tabular-nums; margin: 2px 0; }
+.upgrade-copy small { display: block; font-size: 9px; line-height: 1.25; color: #a79aae; }
+.upgrade-row button { min-width: 70px; min-height: 44px; border: 1px solid #ac8152; border-radius: 4px; background: linear-gradient(#493329, #2d2225); box-shadow: inset 0 1px #ddab6544; padding: 4px 5px; }
+.upgrade-row button:disabled { background: #1a1723; border-color: #493d54; box-shadow: none; }
+.upgrade-price { display: block; color: #f0cf8d; font-size: 11px; font-weight: 700; }
+.buy-label { display: block; color: #c4b4b2; font-size: 9px; margin-top: 3px; }
+.upgrade-row button:disabled .upgrade-price { color: #93879e; }
+.purchased { animation: upgrade-flash 350ms ease-out; }
+@keyframes upgrade-flash { from { background: #b8904138; } to { background: transparent; } }
+.upgrades-open .game-toast { bottom: calc(var(--nav-height) + 270px); padding: 7px; pointer-events: none; }
+.save-warning { position: absolute; z-index: 8; top: var(--hud-height); left: 8px; right: 8px; padding: 8px; background: #342331f5; border: 1px solid #a77865; font-size: 11px; line-height: 1.4; }
+.reset-confirm { margin-top: 16px; padding-top: 16px; border-top: 1px solid #614353; }
+.reset-confirm [data-action="confirm-reset"] { border-color: #a75061; color: #ffb8bc; }
+@media (prefers-reduced-motion: reduce) { .purchased { animation: none; } }

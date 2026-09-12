@@ -1,6 +1,9 @@
 import Phaser from 'phaser';
 import { CombatSimulation } from './simulation';
 import type { Actor, Ability, CombatEvent } from './simulation';
+import type { SceneController, UpgradeId } from './types';
+import { DEMO } from './balance';
+import { SaveStore } from './save';
 import { buildCharacterTextures, buildDungeonTexture, buildEffectTextures, numberTexture } from './textures';
 
 interface ActorView {
@@ -25,6 +28,11 @@ interface Spark {
 
 export function createGame(parent: HTMLElement) {
   const simulation = new CombatSimulation();
+  const saves = new SaveStore(() => window.localStorage);
+  const saved = saves.load();
+  if (saved) simulation.restore(saved);
+  let inspecting = false;
+  const persist = () => { if (!inspecting) saves.write(simulation.exportSave()); };
   let paused = false;
   let ready = false;
   let accumulator = 0;
@@ -68,7 +76,7 @@ export function createGame(parent: HTMLElement) {
         color: '#ddd6d0', backgroundColor: '#181827', padding: { x: 7, y: 5 },
       }).setOrigin(0.5).setDepth(1000);
       const height = nativeHeight();
-      this.scale.resize(180, height);
+      this.scale.setGameSize(180, height);
       this.cameras.main.setSize(180, height).setScroll(0, (244 - height) / 2).setRoundPixels(true);
       sceneInstance = this;
       ready = true;
@@ -87,6 +95,7 @@ export function createGame(parent: HTMLElement) {
     }
 
     capturePowerStrike() {
+      inspecting = true;
       simulation.reset();
       simulation.setAbility('power-strike');
       this.resetVisuals();
@@ -253,26 +262,44 @@ export function createGame(parent: HTMLElement) {
   });
   const observer = new ResizeObserver(() => {
     if (ready) {
-      game.scale.resize(180, nativeHeight());
+      game.scale.setGameSize(180, nativeHeight());
       sceneInstance?.cameras.main.setSize(180, nativeHeight()).setScroll(0, (244 - nativeHeight()) / 2);
     }
   });
   observer.observe(parent);
 
-  const controller = {
+  const saveTimer = window.setInterval(persist, 1000);
+  const saveOnHidden = () => { if (document.hidden) persist(); };
+  document.addEventListener('visibilitychange', saveOnHidden);
+  window.addEventListener('pagehide', persist);
+  const controller: SceneController = {
     pause() { paused = true; },
     resume() { paused = false; accumulator = 0; },
-    reset() { simulation.reset(); sceneInstance?.resetVisuals(); },
-    setAbility(ability: Ability) { simulation.setAbility(ability); },
+    startOver() {
+      inspecting = false; simulation.reset(); simulation.setAbility('power-strike'); paused = false;
+      sceneInstance?.resetVisuals(); saves.replace(simulation.exportSave());
+    },
+    setAbility(ability: Ability) { simulation.setAbility(ability); persist(); },
+    buyUpgrade(id: UpgradeId) { const result = simulation.buyUpgrade(id); if (result.ok) persist(); return result; },
     getSnapshot() {
       return {
         heroHp: simulation.hero.hp, maxHp: simulation.hero.maxHp, gold: simulation.gold,
+        stats: simulation.stats, ability: simulation.ability, upgrades: simulation.upgrades,
+        abilities: {
+          'power-strike': { amount: simulation.stats.atk * DEMO.powerMultiplier, cooldown: DEMO.powerCooldown },
+          heal: { amount: simulation.hero.maxHp * DEMO.healFraction, cooldown: DEMO.healCooldown },
+        },
+        respawnIn: simulation.respawnIn, saveMessage: saves.message,
         abilityCooldown: simulation.cooldowns[simulation.ability],
-        abilityMaxCooldown: simulation.ability === 'heal' ? 10 : 6,
+        abilityMaxCooldown: simulation.ability === 'heal' ? DEMO.healCooldown : DEMO.powerCooldown,
         isPaused: paused,
       };
     },
-    destroy() { observer.disconnect(); game.destroy(true); },
+    destroy() {
+      persist(); window.clearInterval(saveTimer);
+      document.removeEventListener('visibilitychange', saveOnHidden); window.removeEventListener('pagehide', persist);
+      observer.disconnect(); game.destroy(true);
+    },
   };
   // Read-only inspection and reproducible captures are kept out of the product controls.
   if (import.meta.env.DEV) {

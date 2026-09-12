@@ -1,6 +1,8 @@
 # IdleCombatz — startplan
 
-Status: Første animerede visuelle prøve er implementeret og kontrolleret lokalt. Den fulde farming-milepæl er endnu ikke færdig. Resultat og resterende visuelle forskelle er beskrevet i [docs/visual-qa.md](docs/visual-qa.md).
+Status: Den animerede scene og farming-leverancen med upgrades, lokal save og balanceprøve er implementeret og kontrolleret. Se [farming-QA](docs/farming-qa.md), [balancerapport](docs/balance-qa.md) og de resterende visuelle forskelle i [docs/visual-qa.md](docs/visual-qa.md). Lyd og dedikerede hurt-/death-clips fra den samlede milepæl er endnu ikke leveret.
+
+Den gennemførte leverance er beskrevet i [implementeringsplanen for upgrades, save og balance](docs/farming-implementation.md). Den bygger videre på den eksisterende kampmodel, inklusive rettelsen af fastlåsning ved melee-grænsen. Næste gameplay-leverance er tre floors og første boss med andet ability slot som belønning.
 
 ## Formål med starten
 

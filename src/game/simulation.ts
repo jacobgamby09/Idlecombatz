@@ -1,4 +1,8 @@
-export type Ability = 'power-strike' | 'heal';
+import { DEMO, MAX_GOLD } from './balance.ts';
+import { freshLevels, heroStats, upgradePrice, upgradeViews, UPGRADE_IDS } from './progression.ts';
+import type { Ability, PurchaseResult, SaveData, UpgradeId } from './types.ts';
+export type { Ability } from './types.ts';
+export { DEMO } from './balance.ts';
 export type ActorState = 'idle' | 'walk' | 'attack' | 'dead';
 
 export interface Actor {
@@ -14,6 +18,7 @@ export interface Actor {
   attackWait: number;
   attackTarget: number;
   attackPower: boolean;
+  attackDamage: number;
   hitDelivered: boolean;
   flash: number;
   flashKind: 'hit' | 'heal';
@@ -26,25 +31,18 @@ export type CombatEvent =
   | { type: 'death'; target: number; x: number; y: number }
   | { type: 'respawn' };
 
-export const DEMO = {
-  width: 180, height: 244, heroHp: 224, heroAtk: 24, heroDef: 12,
-  heroSpeed: 18, skeletonSpeed: 5.8, attackRange: 23,
-  attackDuration: 0.28, hitTime: 0.12, attackInterval: 1,
-  enemyAttackInterval: 1.65, enemyAtk: 4,
-  respawnSeconds: 5, powerCooldown: 6, healCooldown: 10,
-} as const;
-
 // Arrive slightly inside melee range so crowd separation cannot keep an actor
 // walking on the boundary. The epsilon only absorbs floating-point rounding.
 const MELEE_ARRIVAL_MARGIN = 0.5;
 const DISTANCE_EPSILON = 1e-6;
 
-/** A small deterministic combat study. No persistence, upgrade or floor systems. */
+/** Deterministic farming simulation; rendering and storage live outside it. */
 export class CombatSimulation {
   actors: Actor[] = [];
   events: CombatEvent[] = [];
   elapsed = 0;
   gold = 0;
+  levels = freshLevels();
   ability: Ability = 'power-strike';
   cooldowns: Record<Ability, number> = { 'power-strike': 0.7, heal: 0 };
   respawnIn = 0;
@@ -52,9 +50,36 @@ export class CombatSimulation {
   private randomState = 41;
   private spawnDelay = 0;
 
-  constructor() { this.reset(); }
+  private seed: number;
+  constructor(seed = 41) { this.seed = seed; this.reset(); }
 
   get hero(): Actor { return this.actors[0]; }
+  get stats() { return heroStats(this.levels); }
+  get upgrades() { return upgradeViews(this.levels, this.gold); }
+
+  buyUpgrade(id: UpgradeId): PurchaseResult {
+    if (!UPGRADE_IDS.includes(id)) return { ok: false, reason: 'Unknown upgrade.' };
+    const price = upgradePrice(id, this.levels[id]);
+    if (price === null) return { ok: false, reason: 'Maximum level reached.' };
+    if (this.gold < price) return { ok: false, reason: 'Not enough gold.' };
+    this.gold -= price;
+    this.levels[id]++;
+    this.hero.maxHp = this.stats.maxHp;
+    return { ok: true };
+  }
+
+  exportSave(): SaveData {
+    return { version: 1, gold: this.gold, levels: { ...this.levels }, ability: this.ability,
+      heroHp: this.hero.hp, respawnIn: this.respawnIn, cooldowns: { ...this.cooldowns } };
+  }
+
+  restore(data: SaveData) {
+    this.reset();
+    this.gold = data.gold; this.levels = { ...data.levels }; this.ability = data.ability;
+    this.populate();
+    this.hero.hp = data.heroHp; this.cooldowns = { ...data.cooldowns }; this.respawnIn = data.respawnIn;
+    if (this.hero.hp === 0) this.hero.state = 'dead';
+  }
 
   private random() {
     this.randomState = (Math.imul(this.randomState, 1664525) + 1013904223) >>> 0;
@@ -62,21 +87,22 @@ export class CombatSimulation {
   }
 
   private actor(kind: Actor['kind'], x: number, y: number): Actor {
-    const maxHp = kind === 'hero' ? DEMO.heroHp : 68 + Math.floor(this.random() * 35);
+    const maxHp = kind === 'hero' ? this.stats.maxHp : 68 + Math.floor(this.random() * 35);
     return {
       id: this.nextId++, kind, x, y, hp: maxHp, maxHp,
       facing: x < 90 ? 1 : -1, state: 'idle', stateTime: 0,
       attackWait: kind === 'hero' ? 0.45 : 1 + this.random(),
-      attackTarget: 0, attackPower: false, hitDelivered: false,
+      attackTarget: 0, attackPower: false, attackDamage: 0, hitDelivered: false,
       flash: 0, flashKind: 'hit', spawnTime: 0,
     };
   }
 
   reset() {
     this.nextId = 1;
-    this.randomState = 41;
+    this.randomState = this.seed;
     this.elapsed = 0;
     this.gold = 0;
+    this.levels = freshLevels();
     this.respawnIn = 0;
     this.spawnDelay = 0;
     this.cooldowns = { 'power-strike': 0.7, heal: 0 };
@@ -100,8 +126,8 @@ export class CombatSimulation {
   private hit(source: Actor, target: Actor) {
     if (target.hp <= 0 || source.hp <= 0) return;
     const damage = source.kind === 'hero'
-      ? DEMO.heroAtk * (source.attackPower ? 3 : 1)
-      : DEMO.enemyAtk * 100 / (100 + DEMO.heroDef);
+      ? source.attackDamage
+      : DEMO.enemyAtk * 100 / (100 + this.stats.def);
     target.hp = Math.max(0, target.hp - damage);
     target.flash = 0.08;
     target.flashKind = 'hit';
@@ -110,8 +136,8 @@ export class CombatSimulation {
     if (target.hp <= 0) {
       this.changeState(target, 'dead');
       this.events.push({ type: 'death', target: target.id, x: target.x, y: target.y });
-      if (target.kind === 'skeleton') this.gold += 1;
-      else this.respawnIn = DEMO.respawnSeconds;
+      if (target.kind === 'skeleton') this.gold = Math.min(MAX_GOLD, this.gold + 1);
+      else this.respawnIn = this.stats.respawn;
     }
   }
 
@@ -137,8 +163,8 @@ export class CombatSimulation {
       return;
     }
 
-    if (this.ability === 'heal' && this.cooldowns.heal === 0 && this.hero.hp <= this.hero.maxHp * 0.8) {
-      const amount = this.hero.maxHp * 0.2;
+    if (this.ability === 'heal' && this.cooldowns.heal === 0 && this.hero.hp <= this.hero.maxHp * (1 - DEMO.healFraction)) {
+      const amount = this.hero.maxHp * DEMO.healFraction;
       this.hero.hp = Math.min(this.hero.maxHp, this.hero.hp + amount);
       this.hero.flash = 0.15;
       this.hero.flashKind = 'heal';
@@ -178,6 +204,7 @@ export class CombatSimulation {
         actor.attackTarget = target.id;
         actor.hitDelivered = false;
         actor.attackPower = actor.kind === 'hero' && this.ability === 'power-strike' && this.cooldowns['power-strike'] === 0;
+        actor.attackDamage = actor.kind === 'hero' ? this.stats.atk * (actor.attackPower ? DEMO.powerMultiplier : 1) : DEMO.enemyAtk;
         if (actor.attackPower) this.cooldowns['power-strike'] = DEMO.powerCooldown;
         actor.attackWait = actor.kind === 'hero' ? DEMO.attackInterval : DEMO.enemyAttackInterval;
       } else {

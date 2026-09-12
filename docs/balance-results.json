@@ -1,0 +1,393 @@
+{
+  "seconds": 600,
+  "seeds": [
+    41,
+    7,
+    123
+  ],
+  "results": [
+    {
+      "build": "Baseline",
+      "budget": 0,
+      "spent": 0,
+      "levels": {
+        "atk": 0,
+        "hp": 0,
+        "def": 0,
+        "respawn": 0
+      },
+      "goldPerMinute": 15.17,
+      "uptime": 89.13,
+      "deaths": [
+        13,
+        13,
+        13
+      ],
+      "meanCompletedLife": [
+        39.6,
+        39.6,
+        40.8
+      ]
+    },
+    {
+      "build": "Baseline Heal",
+      "budget": 0,
+      "spent": 0,
+      "levels": {
+        "atk": 0,
+        "hp": 0,
+        "def": 0,
+        "respawn": 0
+      },
+      "goldPerMinute": 13.57,
+      "uptime": 94.47,
+      "deaths": [
+        7,
+        7,
+        6
+      ],
+      "meanCompletedLife": [
+        80.8,
+        76.8,
+        86.8
+      ]
+    },
+    {
+      "build": "Offense",
+      "budget": 60,
+      "spent": 59,
+      "levels": {
+        "atk": 6,
+        "hp": 0,
+        "def": 0,
+        "respawn": 0
+      },
+      "goldPerMinute": 26.5,
+      "uptime": 93.87,
+      "deaths": [
+        8,
+        7,
+        7
+      ],
+      "meanCompletedLife": [
+        69.2,
+        74.2,
+        73.3
+      ]
+    },
+    {
+      "build": "Sustain",
+      "budget": 60,
+      "spent": 55,
+      "levels": {
+        "atk": 0,
+        "hp": 4,
+        "def": 4,
+        "respawn": 0
+      },
+      "goldPerMinute": 14.9,
+      "uptime": 100,
+      "deaths": [
+        0,
+        0,
+        0
+      ],
+      "meanCompletedLife": [
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "build": "Mixed",
+      "budget": 60,
+      "spent": 55,
+      "levels": {
+        "atk": 3,
+        "hp": 3,
+        "def": 2,
+        "respawn": 0
+      },
+      "goldPerMinute": 22.73,
+      "uptime": 94.98,
+      "deaths": [
+        6,
+        6,
+        6
+      ],
+      "meanCompletedLife": [
+        82.9,
+        90.4,
+        89.6
+      ]
+    },
+    {
+      "build": "Offense",
+      "budget": 120,
+      "spent": 119,
+      "levels": {
+        "atk": 9,
+        "hp": 0,
+        "def": 0,
+        "respawn": 0
+      },
+      "goldPerMinute": 27.87,
+      "uptime": 94.43,
+      "deaths": [
+        7,
+        6,
+        7
+      ],
+      "meanCompletedLife": [
+        79.2,
+        82.3,
+        77.8
+      ]
+    },
+    {
+      "build": "Sustain",
+      "budget": 120,
+      "spent": 116,
+      "levels": {
+        "atk": 0,
+        "hp": 7,
+        "def": 6,
+        "respawn": 0
+      },
+      "goldPerMinute": 14.9,
+      "uptime": 100,
+      "deaths": [
+        0,
+        0,
+        0
+      ],
+      "meanCompletedLife": [
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "build": "Mixed",
+      "budget": 120,
+      "spent": 120,
+      "levels": {
+        "atk": 5,
+        "hp": 5,
+        "def": 5,
+        "respawn": 0
+      },
+      "goldPerMinute": 26.03,
+      "uptime": 97.49,
+      "deaths": [
+        3,
+        4,
+        3
+      ],
+      "meanCompletedLife": [
+        151.7,
+        146.2,
+        156.9
+      ]
+    },
+    {
+      "build": "Offense",
+      "budget": 240,
+      "spent": 216,
+      "levels": {
+        "atk": 12,
+        "hp": 0,
+        "def": 0,
+        "respawn": 0
+      },
+      "goldPerMinute": 29.3,
+      "uptime": 94.43,
+      "deaths": [
+        7,
+        6,
+        7
+      ],
+      "meanCompletedLife": [
+        80.5,
+        83.5,
+        77.9
+      ]
+    },
+    {
+      "build": "Sustain",
+      "budget": 240,
+      "spent": 226,
+      "levels": {
+        "atk": 0,
+        "hp": 10,
+        "def": 9,
+        "respawn": 0
+      },
+      "goldPerMinute": 14.9,
+      "uptime": 100,
+      "deaths": [
+        0,
+        0,
+        0
+      ],
+      "meanCompletedLife": [
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "build": "Mixed",
+      "budget": 240,
+      "spent": 223,
+      "levels": {
+        "atk": 8,
+        "hp": 7,
+        "def": 7,
+        "respawn": 0
+      },
+      "goldPerMinute": 29.27,
+      "uptime": 98.33,
+      "deaths": [
+        2,
+        2,
+        2
+      ],
+      "meanCompletedLife": [
+        235.4,
+        234.1,
+        222
+      ]
+    }
+  ],
+  "progression": [
+    {
+      "build": "Offense",
+      "budget": 0,
+      "seed": 41,
+      "spent": 260,
+      "goldPerMinute": 26.5,
+      "uptime": 93.31,
+      "deaths": 8,
+      "meanCompletedLife": 66.9,
+      "minHp": 0,
+      "incomingPerSecond": 3.12,
+      "healingPerSecond": 0,
+      "levels": {
+        "atk": 13,
+        "hp": 0,
+        "def": 0,
+        "respawn": 0
+      },
+      "buys": 13,
+      "firstBuy": 22.28
+    },
+    {
+      "build": "Sustain",
+      "budget": 0,
+      "seed": 41,
+      "spent": 127,
+      "goldPerMinute": 14.3,
+      "uptime": 99.16,
+      "deaths": 1,
+      "meanCompletedLife": 110.6,
+      "minHp": 0,
+      "incomingPerSecond": 5.28,
+      "healingPerSecond": 5.12,
+      "levels": {
+        "atk": 0,
+        "hp": 7,
+        "def": 7,
+        "respawn": 0
+      },
+      "buys": 14,
+      "firstBuy": 23.8
+    },
+    {
+      "build": "Mixed",
+      "budget": 0,
+      "seed": 41,
+      "spent": 223,
+      "goldPerMinute": 24.2,
+      "uptime": 95.82,
+      "deaths": 5,
+      "meanCompletedLife": 74.5,
+      "minHp": 0,
+      "incomingPerSecond": 2.93,
+      "healingPerSecond": 0,
+      "levels": {
+        "atk": 8,
+        "hp": 7,
+        "def": 7,
+        "respawn": 0
+      },
+      "buys": 22,
+      "firstBuy": 22.28
+    }
+  ],
+  "extendedSustain": [
+    {
+      "build": "Sustain",
+      "budget": 60,
+      "seed": 41,
+      "spent": 55,
+      "goldPerMinute": 14.73,
+      "uptime": 100,
+      "deaths": 0,
+      "meanCompletedLife": null,
+      "minHp": 256.9,
+      "incomingPerSecond": 5.04,
+      "healingPerSecond": 5.01,
+      "levels": {
+        "atk": 0,
+        "hp": 4,
+        "def": 4,
+        "respawn": 0
+      },
+      "buys": 8,
+      "firstBuy": 0
+    },
+    {
+      "build": "Sustain",
+      "budget": 60,
+      "seed": 7,
+      "spent": 55,
+      "goldPerMinute": 14.87,
+      "uptime": 100,
+      "deaths": 0,
+      "meanCompletedLife": null,
+      "minHp": 267.4,
+      "incomingPerSecond": 5.16,
+      "healingPerSecond": 5.12,
+      "levels": {
+        "atk": 0,
+        "hp": 4,
+        "def": 4,
+        "respawn": 0
+      },
+      "buys": 8,
+      "firstBuy": 0
+    },
+    {
+      "build": "Sustain",
+      "budget": 60,
+      "seed": 123,
+      "spent": 55,
+      "goldPerMinute": 14.83,
+      "uptime": 100,
+      "deaths": 0,
+      "meanCompletedLife": null,
+      "minHp": 267.9,
+      "incomingPerSecond": 4.75,
+      "healingPerSecond": 4.73,
+      "levels": {
+        "atk": 0,
+        "hp": 4,
+        "def": 4,
+        "respawn": 0
+      },
+      "buys": 8,
+      "firstBuy": 0
+    }
+  ]
+}

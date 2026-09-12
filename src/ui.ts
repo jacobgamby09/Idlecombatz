@@ -1,25 +1,8 @@
 import referenceUrl from '../references/modern-pixel-reference.png';
+import type { Ability, SceneController, UpgradeId } from './game/types';
+import { UPGRADES, UPGRADE_IDS } from './game/progression';
 
-type Ability = 'power-strike' | 'heal';
 type Panel = 'hero' | 'skills' | 'upgrades' | 'boss';
-
-interface Snapshot {
-  heroHp: number;
-  maxHp: number;
-  gold: number;
-  abilityCooldown: number;
-  abilityMaxCooldown: number;
-  isPaused: boolean;
-}
-
-interface SceneController {
-  pause(): void;
-  resume(): void;
-  reset(): void;
-  destroy(): void;
-  setAbility(ability: Ability): void;
-  getSnapshot(): Snapshot;
-}
 
 const iconOrder = [
   'portrait', 'power-strike', 'heal', 'hero',
@@ -52,9 +35,9 @@ export function mountUI(root: HTMLElement) {
           <div class="hero-status">
             <button class="portrait-frame" type="button" data-panel="hero" aria-label="Inspect hero">${icon('portrait')}</button>
             <div class="health-block">
-              <div class="health-meter" role="meter" aria-label="Hero health" aria-valuemin="0" aria-valuemax="892" aria-valuenow="892">
+              <div class="health-meter" role="meter" aria-label="Hero health" aria-valuemin="0" aria-valuemax="224" aria-valuenow="224">
                 <div class="health-fill"></div>
-                <span class="health-value">892 / 892</span>
+                <span class="health-value">— / —</span>
               </div>
               <span class="hero-name">Knight</span>
             </div>
@@ -63,7 +46,7 @@ export function mountUI(root: HTMLElement) {
             <div class="gold-value">${icon('gold')}<span data-gold>0</span></div>
             <div class="floor-value">${icon('floor')}<span>Floor 1</span></div>
           </div>
-          <button class="settings-button" type="button" data-action="scene" aria-label="Scene settings">${icon('settings')}</button>
+          <button class="settings-button" type="button" data-action="scene" aria-label="Game settings">${icon('settings')}</button>
         </header>
 
         <div class="arena-wrap"><div id="arena" role="img" aria-label="An armored knight fighting skeletons in a torchlit dungeon"></div></div>
@@ -94,19 +77,21 @@ export function mountUI(root: HTMLElement) {
           <div class="detail-content"></div>
         </section>
         <div class="game-toast" role="status" hidden></div>
+        <div class="save-warning" role="status" hidden></div>
       </section>
 
       <div class="scene-utility" aria-label="Visual scene controls">
-        <span class="scene-label"><span class="scene-dot"></span> VISUAL STUDY <span class="scene-version">01</span></span>
-        <div class="scene-actions"><button type="button" data-action="pause">Pause</button><span aria-hidden="true">/</span><button type="button" data-action="reset">Reset</button><span aria-hidden="true">/</span><button type="button" data-action="reference">Reference</button></div>
+        <span class="scene-label"><span class="scene-dot"></span> FARMING PROTOTYPE <span class="scene-version">02</span></span>
+        <div class="scene-actions"><button type="button" data-action="pause">Pause</button><span aria-hidden="true">/</span><button type="button" data-action="scene">Settings</button><span aria-hidden="true">/</span><button type="button" data-action="reference">Reference</button></div>
       </div>
     </div>
 
     <dialog class="scene-dialog">
-      <header class="detail-heading"><h2>Scene</h2><button type="button" data-action="close-dialog" aria-label="Close scene settings">×</button></header>
-      <div class="dialog-body"><p>The first animated visual study. Progression, purchases and saving are not enabled.</p>
-        <div class="utility-buttons"><button type="button" data-action="pause">Pause scene</button><button type="button" data-action="reset">Reset scene</button><button type="button" data-action="reference">View reference</button></div>
-        <p class="subtle-note">Choose Power Strike or Heal in Skills to inspect their effects.</p>
+      <header class="detail-heading"><h2>Settings</h2><button type="button" data-action="close-dialog" aria-label="Close settings">×</button></header>
+      <div class="dialog-body"><p>Progress saves automatically in this browser. Away time earns no rewards. Returning starts a fresh encounter with your saved health and recovery time.</p>
+        <div class="utility-buttons"><button type="button" data-action="pause">Pause</button><button type="button" data-action="start-over">Start over</button><button type="button" data-action="reference">View reference</button></div>
+        <div class="reset-confirm" role="group" aria-label="Confirm new game" hidden><p>Erase all gold and upgrades in this browser and start a new game?</p><div class="utility-buttons"><button type="button" data-action="confirm-reset">Erase progress & start over</button><button type="button" data-action="cancel-reset">Keep playing</button></div></div>
+        <p class="subtle-note">Choose Power Strike or Heal in Skills to shape your build.</p>
       </div>
     </dialog>
 
@@ -132,14 +117,15 @@ export function mountUI(root: HTMLElement) {
   let toastTimer: ReturnType<typeof setTimeout> | undefined;
 
   const panels: Record<Panel, () => string> = {
-    hero: () => `<div class="hero-inspection"><div class="hero-preview">${icon('portrait')}<span>Knight</span></div><dl class="hero-facts"><div><dt>Health</dt><dd data-panel-health>—</dd></div><div><dt>Attack</dt><dd>Sword</dd></div><div><dt>Combat</dt><dd>Automatic</dd></div><div><dt>Ability</dt><dd>${abilityNames[selectedAbility]}</dd></div></dl></div>`,
+    hero: () => `<div class="hero-inspection"><div class="hero-preview">${icon('portrait')}<span>Knight</span></div><dl class="hero-facts"><div><dt>Health</dt><dd data-panel-health>—</dd></div><div><dt>Attack</dt><dd data-stat="atk">—</dd></div><div><dt>Defense</dt><dd data-stat="def">—</dd></div><div><dt>Respawn</dt><dd data-stat="respawn">—</dd></div></dl></div>`,
     skills: () => `<div class="skills-list">${(['power-strike', 'heal'] as const).map((ability) => `<button class="skill-option ${selectedAbility === ability ? 'selected' : ''}" type="button" data-ability="${ability}" aria-pressed="${selectedAbility === ability}"><span class="small-icon-frame">${icon(ability)}</span><span class="skill-copy"><strong>${abilityNames[ability]}</strong><span>${ability === 'power-strike' ? 'A powerful, sweeping sword strike.' : 'Recover health with a restorative spell.'}</span></span><span class="equipped-marker">${selectedAbility === ability ? 'Equipped' : 'Equip'}</span></button>`).join('')}</div><p class="panel-footnote">Abilities cast automatically when useful.</p>`,
-    upgrades: () => `<div class="locked-feature">${icon('upgrades')}<div><h3>Grow stronger</h3><p>ATK, HP, DEF and respawn upgrades arrive with the farming prototype.</p><span class="feature-status">Not available in this visual study</span></div></div>`,
+    upgrades: () => `<div class="upgrade-list">${UPGRADE_IDS.map(id => `<div class="upgrade-row" data-upgrade-row="${id}"><span class="upgrade-symbol">${icon(id === 'atk' ? 'power-strike' : id === 'hp' ? 'heal' : id === 'def' ? 'armor' : 'hero')}</span><div class="upgrade-copy"><div><strong>${UPGRADES[id].name}</strong><span class="upgrade-level"></span></div><span class="upgrade-effect"></span><small>${UPGRADES[id].description}</small></div><button type="button" data-upgrade="${id}"><span class="upgrade-price"></span><span class="buy-label">Buy</span></button></div>`).join('')}</div>`,
     boss: () => `<div class="locked-feature">${icon('boss')}<div><h3>The first challenge</h3><p>Defeat the first boss to unlock your second ability slot.</p><span class="feature-status">Boss encounters are coming with progression</span></div></div>`,
   };
 
   function openPanel(panel: Panel | null) {
     currentPanel = panel;
+    root.querySelector('.game-shell')?.classList.toggle('upgrades-open', panel === 'upgrades');
     detailPanel.hidden = !panel;
     root.querySelectorAll<HTMLButtonElement>('.bottom-nav [data-panel]').forEach((button) => {
       const active = button.dataset.panel === panel;
@@ -174,6 +160,11 @@ export function mountUI(root: HTMLElement) {
   function update() {
     if (!controller) return;
     const state = controller.getSnapshot();
+    if (selectedAbility !== state.ability) {
+      selectedAbility = state.ability;
+      equippedTile.querySelector('.equipped-icon')!.outerHTML = icon(selectedAbility, 'equipped-icon');
+      equippedTile.setAttribute('aria-label', `${abilityNames[selectedAbility]} equipped. Open skills`);
+    }
     const hp = Math.max(0, Math.ceil(state.heroHp));
     const maxHp = Math.max(1, Math.ceil(state.maxHp));
     const healthText = `${hp} / ${maxHp}`;
@@ -195,9 +186,34 @@ export function mountUI(root: HTMLElement) {
     lastCooldown = cooldown;
     const panelHealth = root.querySelector('[data-panel-health]');
     if (panelHealth) panelHealth.textContent = healthText;
+    const attack = root.querySelector('[data-stat="atk"]');
+    if (attack) attack.textContent = String(state.stats.atk);
+    const defense = root.querySelector('[data-stat="def"]');
+    if (defense) defense.textContent = `${state.stats.def} · ${(state.stats.def / (100 + state.stats.def) * 100).toFixed(1)}% less dmg`;
+    const recovery = root.querySelector('[data-stat="respawn"]');
+    if (recovery) recovery.textContent = `${state.stats.respawn.toFixed(1)}s`;
+    root.querySelectorAll<HTMLElement>('.skill-copy > span').forEach(copy => {
+      const ability = copy.closest<HTMLButtonElement>('[data-ability]')!.dataset.ability as Ability;
+      const effect = state.abilities[ability];
+      copy.textContent = `${ability === 'heal' ? `Heal ${effect.amount.toFixed(1)} HP` : `${effect.amount} damage`} · ${effect.cooldown}s cooldown`;
+    });
+    for (const upgrade of state.upgrades) {
+      const row = root.querySelector<HTMLElement>(`[data-upgrade-row="${upgrade.id}"]`);
+      if (!row) continue;
+      const format = (value: number) => upgrade.id === 'respawn' ? `${value.toFixed(1)}s` : String(value);
+      row.querySelector('.upgrade-level')!.textContent = `Lv. ${upgrade.level}`;
+      row.querySelector('.upgrade-effect')!.textContent = `${format(upgrade.value)} → ${format(upgrade.nextValue)}`;
+      const button = row.querySelector<HTMLButtonElement>('button')!;
+      button.disabled = !upgrade.affordable;
+      button.setAttribute('aria-label', upgrade.price === null ? `${upgrade.name}: maximum level` : `Buy ${upgrade.name} for ${upgrade.price} gold`);
+      row.querySelector('.upgrade-price')!.textContent = upgrade.price === null ? 'MAX' : `${upgrade.price.toLocaleString('en')} G`;
+      row.querySelector('.buy-label')!.textContent = upgrade.price === null ? 'Complete' : upgrade.affordable ? 'Buy' : 'Need gold';
+    }
+    const warning = root.querySelector<HTMLElement>('.save-warning')!;
+    warning.hidden = !state.saveMessage;
+    warning.textContent = state.saveMessage;
     root.querySelectorAll<HTMLButtonElement>('[data-action="pause"]').forEach((button) => {
-      const inDialog = Boolean(button.closest('dialog'));
-      button.textContent = state.isPaused ? (inDialog ? 'Play scene' : 'Play') : (inDialog ? 'Pause scene' : 'Pause');
+      button.textContent = state.isPaused ? 'Resume' : 'Pause';
       button.setAttribute('aria-pressed', String(state.isPaused));
     });
     root.querySelector('.scene-dot')?.classList.toggle('paused', state.isPaused);
@@ -215,6 +231,17 @@ export function mountUI(root: HTMLElement) {
     const target = event.target as HTMLElement;
     const button = target.closest<HTMLButtonElement>('button');
     if (!button) return;
+    if (button.dataset.upgrade) {
+      const result = controller?.buyUpgrade(button.dataset.upgrade as UpgradeId);
+      if (result?.ok) {
+        button.closest('.upgrade-row')?.classList.remove('purchased');
+        void button.offsetWidth;
+        button.closest('.upgrade-row')?.classList.add('purchased');
+        notify(`${UPGRADES[button.dataset.upgrade as UpgradeId].name} upgraded`);
+      } else if (result) notify(result.reason);
+      update();
+      return;
+    }
     if (button.dataset.panel) {
       const panel = button.dataset.panel as Panel;
       openPanel(currentPanel === panel ? null : panel);
@@ -227,7 +254,7 @@ export function mountUI(root: HTMLElement) {
     switch (button.dataset.action) {
       case 'close-panel': openPanel(null); break;
       case 'locked-slot': notify('Slot II unlocks after your first boss victory.'); break;
-      case 'scene': sceneDialog.showModal(); break;
+      case 'scene': root.querySelector<HTMLElement>('.reset-confirm')!.hidden = true; sceneDialog.showModal(); break;
       case 'close-dialog': sceneDialog.close(); break;
       case 'close-reference': referenceDialog.close(); break;
       case 'reference': sceneDialog.close(); referenceDialog.showModal(); break;
@@ -236,9 +263,17 @@ export function mountUI(root: HTMLElement) {
         else controller?.pause();
         update();
         break;
-      case 'reset':
-        controller?.reset();
-        controller?.setAbility(selectedAbility);
+      case 'start-over':
+        root.querySelector<HTMLElement>('.reset-confirm')!.hidden = false;
+        root.querySelector<HTMLButtonElement>('[data-action="cancel-reset"]')!.focus();
+        break;
+      case 'cancel-reset':
+        root.querySelector<HTMLElement>('.reset-confirm')!.hidden = true;
+        root.querySelector<HTMLButtonElement>('[data-action="start-over"]')!.focus();
+        break;
+      case 'confirm-reset':
+        controller?.startOver();
+        sceneDialog.close(); openPanel(null);
         lastCooldown = 0;
         update();
         break;
