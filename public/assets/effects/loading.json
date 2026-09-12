@@ -1,0 +1,191 @@
+{
+  "version": 1,
+  "key": "combat",
+  "file": "combat-alpha.png",
+  "width": 1774,
+  "height": 887,
+  "rgba": true,
+  "verification": {
+    "pixelFormat": "Format32bppArgb",
+    "cornerAlpha": 0,
+    "emptyInteriorAlpha": 0,
+    "impactCenterAlpha": 253
+  },
+  "grid": {
+    "columns": 4,
+    "rows": 2,
+    "nominalCellWidth": 443.5,
+    "nominalCellHeight": 443.5,
+    "columnBoundaries": [
+      0,
+      444,
+      887,
+      1331,
+      1774
+    ],
+    "rowBoundaries": [
+      0,
+      444,
+      887
+    ]
+  },
+  "animations": {
+    "crescent": {
+      "frames": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "frameDurationsMs": [
+        40,
+        50,
+        65,
+        45
+      ],
+      "peakFrame": 2
+    },
+    "impact": {
+      "frames": [
+        4,
+        5,
+        6,
+        7
+      ],
+      "frameDurationsMs": [
+        30,
+        40,
+        50,
+        60
+      ],
+      "peakFrame": 6
+    }
+  },
+  "frames": [
+    {
+      "frame": 0,
+      "name": "crescent-0",
+      "sourceRect": {
+        "x": 0,
+        "y": 0,
+        "width": 444,
+        "height": 444
+      },
+      "suggestedSourcePivot": [
+        222,
+        244
+      ]
+    },
+    {
+      "frame": 1,
+      "name": "crescent-1",
+      "sourceRect": {
+        "x": 444,
+        "y": 0,
+        "width": 443,
+        "height": 444
+      },
+      "suggestedSourcePivot": [
+        222,
+        244
+      ]
+    },
+    {
+      "frame": 2,
+      "name": "crescent-2",
+      "sourceRect": {
+        "x": 887,
+        "y": 0,
+        "width": 444,
+        "height": 444
+      },
+      "suggestedSourcePivot": [
+        222,
+        244
+      ]
+    },
+    {
+      "frame": 3,
+      "name": "crescent-3",
+      "sourceRect": {
+        "x": 1331,
+        "y": 0,
+        "width": 443,
+        "height": 444
+      },
+      "suggestedSourcePivot": [
+        222,
+        244
+      ]
+    },
+    {
+      "frame": 4,
+      "name": "impact-0",
+      "sourceRect": {
+        "x": 0,
+        "y": 444,
+        "width": 444,
+        "height": 443
+      },
+      "suggestedSourcePivot": [
+        222,
+        207
+      ]
+    },
+    {
+      "frame": 5,
+      "name": "impact-1",
+      "sourceRect": {
+        "x": 444,
+        "y": 444,
+        "width": 443,
+        "height": 443
+      },
+      "suggestedSourcePivot": [
+        222,
+        207
+      ]
+    },
+    {
+      "frame": 6,
+      "name": "impact-2",
+      "sourceRect": {
+        "x": 887,
+        "y": 444,
+        "width": 444,
+        "height": 443
+      },
+      "suggestedSourcePivot": [
+        222,
+        207
+      ]
+    },
+    {
+      "frame": 7,
+      "name": "impact-3",
+      "sourceRect": {
+        "x": 1331,
+        "y": 444,
+        "width": 443,
+        "height": 443
+      },
+      "suggestedSourcePivot": [
+        222,
+        207
+      ]
+    }
+  ],
+  "rendering": {
+    "imageSmoothingEnabled": false,
+    "worldArtPixelScale": 2,
+    "sourceScaleMustBeConstantAcrossFrames": true,
+    "notes": "Render the bright pixel core in normal blend; a separate subtle glow may use additive blending. Runtime size should match visual.md relative to the hero. Align pivots; do not fit each frame to its own effect bounds."
+  },
+  "provenance": {
+    "original": "combat.png",
+    "failedAlphaAttempt": "combat-alpha-attempt.png",
+    "blackIntermediate": "combat-black.png",
+    "selectedAlpha": "combat-alpha.png",
+    "method": "Built-in image_gen only; every PNG preserved as the tool returned it. No programmatic pixel editing."
+  }
+}

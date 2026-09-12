@@ -1,0 +1,422 @@
+{
+  "version": 1,
+  "generatedWith": "built-in image_gen; originals preserved",
+  "sourceReference": "references/modern-pixel-reference.png",
+  "sourceDimensions": {
+    "width": 1448,
+    "height": 1086
+  },
+  "nominalGrid": {
+    "columns": 4,
+    "rows": 3,
+    "cellWidth": 362,
+    "cellHeight": 362
+  },
+  "animationOrder": {
+    "idle": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "walk": [
+      4,
+      5,
+      6,
+      7
+    ],
+    "attack": [
+      8,
+      9,
+      10,
+      11
+    ]
+  },
+  "timing": {
+    "idleFps": 4,
+    "walkFps": 9,
+    "attackFrameDurationsMs": [
+      65,
+      55,
+      75,
+      85
+    ],
+    "attackContactFrame": 10
+  },
+  "renderRecommendation": {
+    "artCanvasWidth": 48,
+    "artCanvasHeight": 48,
+    "footPivot": [
+      24,
+      40
+    ],
+    "imageSmoothingEnabled": false,
+    "normalCssScale": 2
+  },
+  "assets": [
+    {
+      "key": "hero",
+      "file": "hero-sheet.png",
+      "original": "hero-sheet-original.png",
+      "rgba": true,
+      "artPixelsPerSourcePixel": 0.10317460317460317,
+      "visibleIdleBodyArtHeight": 26,
+      "frames": [
+        {
+          "frame": 0,
+          "name": "hero-idle-0",
+          "sourceRect": {
+            "x": 0,
+            "y": 0,
+            "width": 362,
+            "height": 362
+          },
+          "sourcePivot": [
+            181,
+            325
+          ]
+        },
+        {
+          "frame": 1,
+          "name": "hero-idle-1",
+          "sourceRect": {
+            "x": 362,
+            "y": 0,
+            "width": 362,
+            "height": 362
+          },
+          "sourcePivot": [
+            181,
+            325
+          ]
+        },
+        {
+          "frame": 2,
+          "name": "hero-idle-2",
+          "sourceRect": {
+            "x": 724,
+            "y": 0,
+            "width": 362,
+            "height": 362
+          },
+          "sourcePivot": [
+            181,
+            325
+          ]
+        },
+        {
+          "frame": 3,
+          "name": "hero-idle-3",
+          "sourceRect": {
+            "x": 1086,
+            "y": 0,
+            "width": 362,
+            "height": 362
+          },
+          "sourcePivot": [
+            181,
+            325
+          ]
+        },
+        {
+          "frame": 4,
+          "name": "hero-walk-0",
+          "sourceRect": {
+            "x": 0,
+            "y": 362,
+            "width": 362,
+            "height": 362
+          },
+          "sourcePivot": [
+            181,
+            325
+          ]
+        },
+        {
+          "frame": 5,
+          "name": "hero-walk-1",
+          "sourceRect": {
+            "x": 362,
+            "y": 362,
+            "width": 362,
+            "height": 362
+          },
+          "sourcePivot": [
+            181,
+            325
+          ]
+        },
+        {
+          "frame": 6,
+          "name": "hero-walk-2",
+          "sourceRect": {
+            "x": 724,
+            "y": 362,
+            "width": 362,
+            "height": 362
+          },
+          "sourcePivot": [
+            181,
+            325
+          ]
+        },
+        {
+          "frame": 7,
+          "name": "hero-walk-3",
+          "sourceRect": {
+            "x": 1086,
+            "y": 362,
+            "width": 362,
+            "height": 362
+          },
+          "sourcePivot": [
+            181,
+            325
+          ]
+        },
+        {
+          "frame": 8,
+          "name": "hero-attack-0",
+          "sourceRect": {
+            "x": 0,
+            "y": 724,
+            "width": 362,
+            "height": 362
+          },
+          "sourcePivot": [
+            181,
+            325
+          ]
+        },
+        {
+          "frame": 9,
+          "name": "hero-attack-1",
+          "sourceRect": {
+            "x": 362,
+            "y": 724,
+            "width": 362,
+            "height": 362
+          },
+          "sourcePivot": [
+            181,
+            325
+          ]
+        },
+        {
+          "frame": 10,
+          "name": "hero-attack-2",
+          "sourceRect": {
+            "x": 724,
+            "y": 724,
+            "width": 400,
+            "height": 362
+          },
+          "sourcePivot": [
+            181,
+            325
+          ]
+        },
+        {
+          "frame": 11,
+          "name": "hero-attack-3",
+          "sourceRect": {
+            "x": 1124,
+            "y": 724,
+            "width": 324,
+            "height": 362
+          },
+          "sourcePivot": [
+            143,
+            325
+          ]
+        }
+      ]
+    },
+    {
+      "key": "skeleton",
+      "file": "skeleton-sheet.png",
+      "original": "skeleton-sheet-original.png",
+      "rgba": true,
+      "artPixelsPerSourcePixel": 0.09090909090909091,
+      "visibleIdleBodyArtHeight": 24,
+      "frames": [
+        {
+          "frame": 0,
+          "name": "skeleton-idle-0",
+          "sourceRect": {
+            "x": 0,
+            "y": 0,
+            "width": 362,
+            "height": 362
+          },
+          "sourcePivot": [
+            181,
+            353
+          ]
+        },
+        {
+          "frame": 1,
+          "name": "skeleton-idle-1",
+          "sourceRect": {
+            "x": 362,
+            "y": 0,
+            "width": 362,
+            "height": 362
+          },
+          "sourcePivot": [
+            181,
+            353
+          ]
+        },
+        {
+          "frame": 2,
+          "name": "skeleton-idle-2",
+          "sourceRect": {
+            "x": 724,
+            "y": 0,
+            "width": 362,
+            "height": 362
+          },
+          "sourcePivot": [
+            181,
+            353
+          ]
+        },
+        {
+          "frame": 3,
+          "name": "skeleton-idle-3",
+          "sourceRect": {
+            "x": 1086,
+            "y": 0,
+            "width": 362,
+            "height": 362
+          },
+          "sourcePivot": [
+            181,
+            353
+          ]
+        },
+        {
+          "frame": 4,
+          "name": "skeleton-walk-0",
+          "sourceRect": {
+            "x": 0,
+            "y": 362,
+            "width": 362,
+            "height": 362
+          },
+          "sourcePivot": [
+            181,
+            339
+          ]
+        },
+        {
+          "frame": 5,
+          "name": "skeleton-walk-1",
+          "sourceRect": {
+            "x": 362,
+            "y": 362,
+            "width": 362,
+            "height": 362
+          },
+          "sourcePivot": [
+            181,
+            339
+          ]
+        },
+        {
+          "frame": 6,
+          "name": "skeleton-walk-2",
+          "sourceRect": {
+            "x": 724,
+            "y": 362,
+            "width": 362,
+            "height": 362
+          },
+          "sourcePivot": [
+            181,
+            339
+          ]
+        },
+        {
+          "frame": 7,
+          "name": "skeleton-walk-3",
+          "sourceRect": {
+            "x": 1086,
+            "y": 362,
+            "width": 362,
+            "height": 362
+          },
+          "sourcePivot": [
+            181,
+            339
+          ]
+        },
+        {
+          "frame": 8,
+          "name": "skeleton-attack-0",
+          "sourceRect": {
+            "x": 0,
+            "y": 724,
+            "width": 362,
+            "height": 362
+          },
+          "sourcePivot": [
+            181,
+            327
+          ]
+        },
+        {
+          "frame": 9,
+          "name": "skeleton-attack-1",
+          "sourceRect": {
+            "x": 362,
+            "y": 724,
+            "width": 362,
+            "height": 362
+          },
+          "sourcePivot": [
+            181,
+            327
+          ]
+        },
+        {
+          "frame": 10,
+          "name": "skeleton-attack-2",
+          "sourceRect": {
+            "x": 724,
+            "y": 724,
+            "width": 400,
+            "height": 362
+          },
+          "sourcePivot": [
+            181,
+            327
+          ]
+        },
+        {
+          "frame": 11,
+          "name": "skeleton-attack-3",
+          "sourceRect": {
+            "x": 1124,
+            "y": 724,
+            "width": 324,
+            "height": 362
+          },
+          "sourcePivot": [
+            143,
+            327
+          ]
+        }
+      ]
+    }
+  ],
+  "issues": [
+    "Source output size differs from requested 1024×768 but preserves 4:3 ratio.",
+    "Source sprite scale is larger than native art pixels; renderer should nearest-neighbor sample to the shared world art-grid.",
+    "Skeleton baselines differ between animation rows; sourcePivot corrects this without altering original output.",
+    "Contact frame10 dagger/sword tip extends slightly into nominal cell11. Custom sourceRects retain the tip and exclude its fragment from frame11.",
+    "Generated alpha contains partially transparent edge pixels. Preserve source originals; inspect renderer sampling on dark dungeon.",
+    "Character match is subject to in-scene visual QA, not yet declared final user-approved."
+  ]
+}

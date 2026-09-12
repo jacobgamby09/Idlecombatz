@@ -1,0 +1,14 @@
+node_modules/
+dist/
+.DS_Store
+*.log
+.env
+.env.*
+!.env.example
+
+# Keep final visual evidence; omit intermediate browser captures.
+artifacts/*
+!artifacts/scene-strike-360x796.png
+!artifacts/scene-360x640.png
+!artifacts/scene-390x844.png
+!artifacts/scene-motion.webm

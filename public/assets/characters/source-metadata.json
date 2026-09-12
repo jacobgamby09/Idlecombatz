@@ -1,0 +1,292 @@
+[
+  {
+    "File": "hero-sheet.png",
+    "Width": 1448,
+    "Height": 1086,
+    "PixelFormat": "Format32bppArgb",
+    "CornerAlpha": 0,
+    "FrameSize": [
+      362,
+      362
+    ],
+    "Frames": [
+      {
+        "Frame": 0,
+        "BBox": [
+          75,
+          73,
+          324,
+          324
+        ],
+        "OpaquePixels": 37186,
+        "PartialAlphaPixels": 41755
+      },
+      {
+        "Frame": 1,
+        "BBox": [
+          80,
+          73,
+          325,
+          324
+        ],
+        "OpaquePixels": 36611,
+        "PartialAlphaPixels": 41696
+      },
+      {
+        "Frame": 2,
+        "BBox": [
+          78,
+          80,
+          325,
+          323
+        ],
+        "OpaquePixels": 36178,
+        "PartialAlphaPixels": 40449
+      },
+      {
+        "Frame": 3,
+        "BBox": [
+          78,
+          73,
+          325,
+          324
+        ],
+        "OpaquePixels": 37021,
+        "PartialAlphaPixels": 41696
+      },
+      {
+        "Frame": 4,
+        "BBox": [
+          75,
+          70,
+          323,
+          323
+        ],
+        "OpaquePixels": 36566,
+        "PartialAlphaPixels": 42550
+      },
+      {
+        "Frame": 5,
+        "BBox": [
+          96,
+          67,
+          315,
+          323
+        ],
+        "OpaquePixels": 34762,
+        "PartialAlphaPixels": 39666
+      },
+      {
+        "Frame": 6,
+        "BBox": [
+          72,
+          76,
+          325,
+          323
+        ],
+        "OpaquePixels": 36552,
+        "PartialAlphaPixels": 41695
+      },
+      {
+        "Frame": 7,
+        "BBox": [
+          106,
+          67,
+          322,
+          323
+        ],
+        "OpaquePixels": 33762,
+        "PartialAlphaPixels": 37532
+      },
+      {
+        "Frame": 8,
+        "BBox": [
+          35,
+          71,
+          279,
+          324
+        ],
+        "OpaquePixels": 37501,
+        "PartialAlphaPixels": 42883
+      },
+      {
+        "Frame": 9,
+        "BBox": [
+          55,
+          20,
+          276,
+          324
+        ],
+        "OpaquePixels": 39639,
+        "PartialAlphaPixels": 45245
+      },
+      {
+        "Frame": 10,
+        "BBox": [
+          49,
+          77,
+          361,
+          324
+        ],
+        "OpaquePixels": 35974,
+        "PartialAlphaPixels": 40915
+      },
+      {
+        "Frame": 11,
+        "BBox": [
+          0,
+          69,
+          325,
+          323
+        ],
+        "OpaquePixels": 37819,
+        "PartialAlphaPixels": 43526
+      }
+    ]
+  },
+  {
+    "File": "skeleton-sheet.png",
+    "Width": 1448,
+    "Height": 1086,
+    "PixelFormat": "Format32bppArgb",
+    "CornerAlpha": 0,
+    "FrameSize": [
+      362,
+      362
+    ],
+    "Frames": [
+      {
+        "Frame": 0,
+        "BBox": [
+          89,
+          89,
+          321,
+          352
+        ],
+        "OpaquePixels": 35534,
+        "PartialAlphaPixels": 41314
+      },
+      {
+        "Frame": 1,
+        "BBox": [
+          104,
+          89,
+          321,
+          351
+        ],
+        "OpaquePixels": 34797,
+        "PartialAlphaPixels": 40222
+      },
+      {
+        "Frame": 2,
+        "BBox": [
+          88,
+          94,
+          320,
+          352
+        ],
+        "OpaquePixels": 35098,
+        "PartialAlphaPixels": 40686
+      },
+      {
+        "Frame": 3,
+        "BBox": [
+          102,
+          90,
+          320,
+          352
+        ],
+        "OpaquePixels": 34733,
+        "PartialAlphaPixels": 39531
+      },
+      {
+        "Frame": 4,
+        "BBox": [
+          79,
+          72,
+          321,
+          338
+        ],
+        "OpaquePixels": 35700,
+        "PartialAlphaPixels": 42471
+      },
+      {
+        "Frame": 5,
+        "BBox": [
+          96,
+          77,
+          320,
+          338
+        ],
+        "OpaquePixels": 34392,
+        "PartialAlphaPixels": 40471
+      },
+      {
+        "Frame": 6,
+        "BBox": [
+          84,
+          84,
+          321,
+          338
+        ],
+        "OpaquePixels": 35297,
+        "PartialAlphaPixels": 41151
+      },
+      {
+        "Frame": 7,
+        "BBox": [
+          107,
+          77,
+          320,
+          338
+        ],
+        "OpaquePixels": 33358,
+        "PartialAlphaPixels": 38752
+      },
+      {
+        "Frame": 8,
+        "BBox": [
+          62,
+          70,
+          288,
+          326
+        ],
+        "OpaquePixels": 35530,
+        "PartialAlphaPixels": 41152
+      },
+      {
+        "Frame": 9,
+        "BBox": [
+          80,
+          27,
+          303,
+          326
+        ],
+        "OpaquePixels": 36641,
+        "PartialAlphaPixels": 43453
+      },
+      {
+        "Frame": 10,
+        "BBox": [
+          59,
+          81,
+          361,
+          325
+        ],
+        "OpaquePixels": 33442,
+        "PartialAlphaPixels": 38358
+      },
+      {
+        "Frame": 11,
+        "BBox": [
+          0,
+          69,
+          324,
+          325
+        ],
+        "OpaquePixels": 34617,
+        "PartialAlphaPixels": 40136
+      }
+    ]
+  }
+]
