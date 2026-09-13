@@ -8,7 +8,8 @@ export interface UpgradeView {
 }
 export type PurchaseResult = { ok: true } | { ok: false; reason: string };
 export interface SaveData {
-  version: 1; gold: number; levels: Levels; ability: Ability;
+  version: 2; gold: number; levels: Levels; ability: Ability;
+  floor: number; bossDefeated: boolean;
   heroHp: number; cooldowns: Record<Ability, number>; respawnIn: number;
 }
 export interface Snapshot {
@@ -16,9 +17,14 @@ export interface Snapshot {
   ability: Ability; abilityCooldown: number; abilityMaxCooldown: number;
   abilities: Record<Ability, { amount: number; cooldown: number }>;
   respawnIn: number; isPaused: boolean; upgrades: UpgradeView[]; saveMessage: string;
+  floor: number; region: string; bossDefeated: boolean; mode: 'farming' | 'boss' | 'victory';
+  bossHp: number; bossMaxHp: number; bossSeconds: number; goldPerMinute: number;
+  secondaryCooldown: number; secondaryMaxCooldown: number; bossResult: 'victory' | 'defeat' | null;
+  victoryReady: boolean;
 }
 export interface SceneController {
   pause(): void; resume(): void; startOver(): void; destroy(): void;
   setAbility(ability: Ability): void; buyUpgrade(id: UpgradeId): PurchaseResult;
+  setFloor(id: number): PurchaseResult; startBoss(): PurchaseResult; leaveBoss(): void;
   getSnapshot(): Snapshot;
 }

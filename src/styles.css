@@ -280,3 +280,42 @@ dialog::backdrop { background: #08060dd6; backdrop-filter: blur(3px); }
 .reset-confirm { margin-top: 16px; padding-top: 16px; border-top: 1px solid #614353; }
 .reset-confirm [data-action="confirm-reset"] { border-color: #a75061; color: #ffb8bc; }
 @media (prefers-reduced-motion: reduce) { .purchased { animation: none; } }
+
+/* The same compact violet frames carry floor selection and the first boss. */
+button.floor-value { color: #bcb4c4; font-family: inherit; cursor: pointer; padding-right: 4px; }
+.floor-chevron { margin-left: auto; color: #aa8d63; }
+.boss-health { position: absolute; z-index: 2; top: 9px; left: 12px; right: 12px; display: flex; align-items: center; gap: 7px; background: #19131eee; border: 1px solid #756049; border-radius: 5px; padding: 5px; box-shadow: inset 0 1px #d4a56430, 0 3px 12px #09081099; }
+.boss-health > img { width: 36px; height: 36px; object-fit: cover; image-rendering: pixelated; border-radius: 3px; border: 1px solid #6e5548; }
+.boss-health-copy { flex: 1; min-width: 0; }
+.boss-health-copy > div:first-child { display: flex; justify-content: space-between; font-size: 10px; color: #e2c48b; margin-bottom: 4px; }
+.boss-health-copy strong { font-weight: 600; }
+.boss-health [data-boss-time] { color: #b7a5b6; font-variant-numeric: tabular-nums; }
+.boss-health > button { width: 32px; height: 36px; font-size: 22px; background: transparent; border: 0; color: #a897a8; }
+.boss-meter { height: 15px; position: relative; border: 1px solid #4e253b; background: #1a1020; overflow: hidden; }
+.boss-meter > div { height: 100%; background: linear-gradient(#b64350, #762039); }
+.boss-meter > span { position: absolute; inset: 0; display: grid; place-items: center; font-size: 9px; font-weight: 700; text-shadow: 0 1px #180c17; }
+.boss-inspection { display: flex; align-items: center; gap: 12px; }
+.boss-inspection img { width: 60px; height: 60px; object-fit: cover; image-rendering: pixelated; border-radius: 4px; border: 1px solid #8c704c; }
+.boss-inspection h3 { font-size: 15px; color: #e5cd9a; margin: 0 0 6px; }
+.boss-inspection p { font-size: 11px; color: #ac9bb2; margin: 0 0 6px; }
+.boss-reward { font-size: 10px; color: #ceb47b; }
+.boss-rules { font-size: 11px; color: #ac9db5; line-height: 1.6; }
+.primary-action, .victory-card > button { width: 100%; min-height: 44px; padding: 8px 12px; background: linear-gradient(#503b2d, #30232b); border: 1px solid #ad8657; border-radius: 4px; color: #efd29d; font-weight: 600; font-size: 12px; box-shadow: inset 0 1px #e5b66e33; }
+.primary-action:disabled { opacity: .5; }
+.victory-card { position: absolute; z-index: 3; bottom: 12px; left: 20px; right: 20px; padding: 15px 15px 7px; background: linear-gradient(#302433f5, #181522fa); border: 1px solid #b18d59; border-radius: 6px; text-align: center; box-shadow: inset 0 1px #e4bd714a, 0 5px 25px #0a061bcc; animation: victory-enter 350ms ease-out; }
+.victory-eyebrow { display: block; color: #ba955d; font-size: 8px; letter-spacing: 2px; margin-bottom: 5px; }
+.victory-card > strong { display: block; color: #f2d6a1; font-size: 19px; font-weight: 600; }
+.victory-card p { color: #bdb0c4; font-size: 11px; line-height: 1.6; margin: 8px 0 12px; }
+.victory-card button span { margin-left: 8px; }
+.victory-card > .quiet-button { background: none; box-shadow: none; border-color: transparent; font-size: 10px; color: #9f90aa; min-height: 35px; }
+.slot-unlocked { animation: unlock-glow 1.3s ease-out; }
+.floor-list { display: grid; gap: 6px; }
+.floor-list button { display: flex; align-items: center; justify-content: space-between; min-height: 46px; border: 1px solid #4d3d58; border-radius: 4px; padding: 7px 10px; background: #17131f; text-align: left; font-size: 11px; }
+.floor-list button > span:last-child { text-align: right; color: #d7bc85; }
+.floor-list small { display: block; margin-top: 3px; font-size: 9px; color: #a493ae; }
+.floor-list button.selected { border-color: #ad8450; background: #30252d; }
+.floor-list button:disabled { opacity: .5; }
+.game-toast { pointer-events: none; }
+@keyframes unlock-glow { from { filter: brightness(2.3); box-shadow: 0 0 28px #ffb850aa; } to { filter: brightness(1); } }
+@keyframes victory-enter { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+@media (prefers-reduced-motion: reduce) { .victory-card, .slot-unlocked { animation: none; } }

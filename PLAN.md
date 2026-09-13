@@ -92,6 +92,8 @@ Første milepæl er færdig, når den automatiske kamp, upgrades, ability-valg, 
 
 ## Milepæl 2 — test progression og det første gennembrud
 
+Status 2026-09-13: Tre valgbare floors, rullende gold/min, Goblin King, andet ability slot, Floor 4/Moss Crypt og tilhørende sprite-sæt er implementeret. Se [boss-QA](docs/boss-qa.md). Øvrige enemy-archetypes og Whirlwind er fortsat næste udvidelse.
+
 Efter første arena er afprøvet:
 
 Den konkrete næste gameplay-leverance bruger eksisterende skeletter og abilities plus en ny boss. Enemy-archetypes og Whirlwind fra udvidelseslisten nedenfor følger bagefter. [Art-planen](docs/floors-boss-art-plan.md) fastlægger sprite-produktionen. Alle floors i første område og bossforsøget deler samme dungeon; bosssejr åbner første floor i område 2, hvor miljøet først skifter. Tidligere floors beholder deres oprindelige dungeon.

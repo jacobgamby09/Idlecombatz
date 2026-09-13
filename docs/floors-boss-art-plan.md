@@ -1,6 +1,6 @@
 # Art-plan: tre floors, første boss og næste dungeon
 
-Dato: 2026-09-13. Status: Produktionsplan. Nye sprites og miljøer nedenfor er ikke produceret endnu.
+Dato: 2026-09-13. Status: Implementeret. De 34 character-frames, portræt, impact og Moss Crypt er produceret med indbygget ImageGen og integreret. Se [boss-QA](boss-qa.md), [prompts](../art-prompts/boss-region.md) og [loading-metadata](../public/assets/boss/loading.json) for faktisk eksport, framevalg og kontrol.
 
 ## Dungeon følger område, ikke floor
 

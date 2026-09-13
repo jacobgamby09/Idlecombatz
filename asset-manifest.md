@@ -1,7 +1,8 @@
 # IdleCombatz — asset-manifest
 
-**Leverance:** Første animerede visuelle prøve.  
-**Produktionsstatus:** Character-sheets, dungeon, UI-atlas og transparent VFX er produceret og integreret i den kørende scene. Fire simulationstests og production-build passerer. Den første prøve er kontrolleret i browser; [visuel QA](docs/visual-qa.md) dokumenterer evidens og resterende art-forskelle. Dette er ikke hele farming-milepælens visuelle accept.  
+**Leverance:** Farming, tre floors, Goblin King og første nye region.
+
+**Produktionsstatus:** Oprindelige assets samt boss, hurt/death, impact, portræt og Moss Crypt er produceret og integreret. Den aktuelle leverance dokumenteres i [boss-QA](docs/boss-qa.md). Tabellerne om første prøve nedenfor er historiske; den aktuelle udvidelse står nederst.
 **Visuelt facit:** [Original reference](references/modern-pixel-reference.png) og [visual.md](visual.md).  
 **Scope og rækkefølge:** [PLAN.md](PLAN.md).
 
@@ -22,7 +23,7 @@ En genereret enkeltillustration eller et flot sourceark er ikke i sig selv et f�
 
 - Original reference bevares uændret. Den bruges til sammenligning, ikke som udskåret gameplay-atlas.
 - Spilassets og genererede kilder ligger under `public/assets/`. Character-originaler bevares som `hero-sheet-original.png` og `skeleton-sheet-original.png` ved siden af de indlæste filer. Dungeon og UI-atlas er selvstændige genererede originalfiler. Der findes ikke en særskilt `assets/source/`-mappe.
-- Rastereksporter er PNG. Figurer og VFX har ægte alfa; sort eller ternet baggrund må ikke være bagt ind i filen.
+- Rastereksporter er PNG. Indlæste runtime-figurer og VFX har alfa; sort, ternet eller key-farvet baggrund må ikke kunne ses i scenen. Det nye character-sæts originale RGB-kilder bruger magenta key, som loaderen fjerner før frame-normalisering. Den ubrugte boss-konceptkilde har bagte tern og må ikke indlæses som sprite.
 - Producerede filnavne nedenfor er faktiske paths relative til `public/assets/`. Planlagte filer er kontraktmål; manifest og loader opdateres sammen ved ændringer.
 - Art-pixels er det fælles synlige pixel-grid. Sourcefilens pixelmål kan være større og må ikke forveksles med figurens art-skala.
 - Normal arena er omtrent 180 × 244 art-pixels, vist i 360 × 488 UI-enheder. Hero, skelet, sten, våben og skarpe effekter bruger samme pixelsprog.
@@ -184,8 +185,20 @@ Faktiske genereringsprompts: [characters](art-prompts/characters.md), [environme
 - [x] Screenshot ved 360 × 796 og kort bevægelig sekvens er kontrolleret; 360 × 640, 390 × 844 og desktop tilpasser uden blur eller vandret scroll.
 - [x] Resterende afvigelser er dokumenteret. Denne prøves afslutning er adskilt fra hele farming-milepælens acceptliste.
 
-## Næste produktionssæt — 2026-09-13
+## Integreret produktionssæt — 2026-09-13
 
-[Art-planen for floors og boss](docs/floors-boss-art-plan.md) fastlægger næste sæt: Goblin King med 22 character-frames, hurt/death-udvidelser til hero og skelet, boss-portræt/impact, slot-unlock-feedback og ét nyt miljø til området efter bossen. Disse nye assets er planlagte, ikke producerede. Alle floors før bossen og selve bossforsøget genbruger den eksisterende dungeon uændret.
+[Art-planen for floors og boss](docs/floors-boss-art-plan.md) er implementeret. Alle floors før bossen og selve bossforsøget genbruger den eksisterende dungeon uændret.
 
-Gameplay-status: Upgrades og lokal save er nu implementeret og dækket af 19 tests; se [farming-QA](docs/farming-qa.md). De historiske proof-tabeller ovenfor beskriver første art-leverance og dens daværende status.
+| Fil under public/assets | Indhold og faktisk indlæsning | Status |
+|---|---|---|
+| boss/goblin-king-sheet.png | 1536×1024 RGB key-source; 22 anvendte poses. Idle 0–3, hurt 4–5, walk 6/10/8/9, attack 12–17, death 18–23. Source 7 har ekstra våben og fravælges; 11 er reserve. 96×96 runtime, pivot 48/82, krop ca. 54 art-pixels | Integreret og kontrolleret |
+| characters/extensions/hero-hurt-death.png | 2172×724 RGB key-source; hurt 0–1, death 2–5. 48×48 runtime, pivot 24/40; krop 26 art-pixels | Integreret og kontrolleret |
+| characters/extensions/skeleton-hurt-death.png | 2172×724 RGB key-source; hurt 0–1, death 2–5. 48×48 runtime, pivot 24/40; krop 24 art-pixels | Integreret og kontrolleret |
+| boss/portrait.png | 1254×1254 RGB-portræt; boss-intro og HP-visning | Integreret og kontrolleret |
+| boss/impact.png | 2172×724 RGBA med ægte alfa; 4 frames, 320 ms, 64×64 runtime | Integreret og kontrolleret |
+| environment/moss-crypt.png | 1086×1448 RGB, separat kølig krypt med samme arena-geometri; runtime 180×244 | Integreret og kontrolleret |
+| boss/goblin-king-anchor-source.png | Koncept-reference med bagt ternet baggrund | Bevaret kilde; IKKE runtime-asset |
+| boss/loading.json | Målte crops, source-fodpivots, skala og clip-timing | Integreret metadata |
+| src/styles.css | Varm victory-card og slot-unlock-accent; reduced-motion understøttet | Integreret UI-feedback |
+
+Bossens attack-klip varer 860 ms og rammer ved 520 ms, ved frame 16. Hurt er 2×40 ms og afbryder aldrig en igangværende attack-animation eller simulation. Normale death-clips varer 4×140 ms, derefter 190 ms fade; boss-death er 6×160 ms med efterfølgende fade. Reward-kortet venter til sammenfaldet er afspillet. Kilder og faktiske prompts: [boss-region.md](art-prompts/boss-region.md). QA og kendte begrænsninger: [boss-qa.md](docs/boss-qa.md).

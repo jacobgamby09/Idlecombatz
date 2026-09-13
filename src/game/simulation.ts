@@ -1,13 +1,14 @@
 import { DEMO, MAX_GOLD } from './balance.ts';
 import { freshLevels, heroStats, upgradePrice, upgradeViews, UPGRADE_IDS } from './progression.ts';
 import type { Ability, PurchaseResult, SaveData, UpgradeId } from './types.ts';
+import { BOSS, floorById, FLOORS } from './world.ts';
 export type { Ability } from './types.ts';
 export { DEMO } from './balance.ts';
 export type ActorState = 'idle' | 'walk' | 'attack' | 'dead';
 
 export interface Actor {
   id: number;
-  kind: 'hero' | 'skeleton';
+  kind: 'hero' | 'skeleton' | 'boss';
   x: number;
   y: number;
   hp: number;
@@ -46,6 +47,13 @@ export class CombatSimulation {
   ability: Ability = 'power-strike';
   cooldowns: Record<Ability, number> = { 'power-strike': 0.7, heal: 0 };
   respawnIn = 0;
+  floor = 1;
+  bossDefeated = false;
+  mode: 'farming' | 'boss' | 'victory' = 'farming';
+  bossSeconds = 0;
+  bossResult: 'victory' | 'defeat' | null = null;
+  private farmingTime = 0;
+  private rewards: { time: number; amount: number }[] = [];
   private nextId = 1;
   private randomState = 41;
   private spawnDelay = 0;
@@ -56,8 +64,46 @@ export class CombatSimulation {
   get hero(): Actor { return this.actors[0]; }
   get stats() { return heroStats(this.levels); }
   get upgrades() { return upgradeViews(this.levels, this.gold); }
+  get region() { return this.mode === 'farming' ? floorById(this.floor).regionId : 'dungeon'; }
+  get goldPerMinute() { return this.farmingTime > 0 ? this.rewards.reduce((sum, r) => sum + r.amount, 0) * 60 / Math.min(60, this.farmingTime) : 0; }
+
+  setFloor(id: number): PurchaseResult {
+    if (!FLOORS.some(f => f.id === id) || (id === 4 && !this.bossDefeated)) return { ok: false, reason: 'Defeat the Goblin King to enter.' };
+    if (this.mode === 'boss') return { ok: false, reason: 'Finish or retreat from this attempt first.' };
+    if (id === this.floor && this.mode === 'farming') return { ok: true };
+    const hp = this.hero.hp;
+    this.floor = id; this.mode = 'farming'; this.bossResult = null;
+    this.farmingTime = 0; this.rewards = []; this.spawnDelay = 0;
+    this.populate(); this.hero.hp = hp;
+    if (hp === 0) this.hero.state = 'dead';
+    this.events = [{ type: 'respawn' }];
+    return { ok: true };
+  }
+
+  startBoss(): PurchaseResult {
+    if (this.mode !== 'farming' || this.hero.hp <= 0) return { ok: false, reason: 'Wait until your hero has respawned.' };
+    if (this.bossDefeated) return { ok: false, reason: 'The king is already defeated.' };
+    this.mode = 'boss'; this.bossResult = null; this.bossSeconds = BOSS.seconds;
+    this.actors = [this.actor('hero', 78, 165), this.actor('boss', 108, 115)];
+    this.cooldowns = { 'power-strike': 0, heal: 0 }; this.respawnIn = 0;
+    this.events = [{ type: 'respawn' }];
+    return { ok: true };
+  }
+
+  leaveBoss() {
+    if (this.mode === 'boss') { this.loseBoss(); return; }
+    if (this.mode === 'victory') this.setFloor(this.floor);
+  }
+
+  private loseBoss() {
+    this.mode = 'farming'; this.bossResult = 'defeat';
+    this.populate(); this.hero.hp = 0; this.hero.state = 'dead';
+    this.respawnIn = this.stats.respawn; this.spawnDelay = 0;
+    this.events.push({ type: 'respawn' });
+  }
 
   buyUpgrade(id: UpgradeId): PurchaseResult {
+    if (this.mode !== 'farming') return { ok: false, reason: 'Upgrades are available between boss attempts.' };
     if (!UPGRADE_IDS.includes(id)) return { ok: false, reason: 'Unknown upgrade.' };
     const price = upgradePrice(id, this.levels[id]);
     if (price === null) return { ok: false, reason: 'Maximum level reached.' };
@@ -69,13 +115,15 @@ export class CombatSimulation {
   }
 
   exportSave(): SaveData {
-    return { version: 1, gold: this.gold, levels: { ...this.levels }, ability: this.ability,
-      heroHp: this.hero.hp, respawnIn: this.respawnIn, cooldowns: { ...this.cooldowns } };
+    // Reloading/closing during an attempt counts as a retreat, never partial boss progress or a free heal.
+    return { version: 2, floor: this.floor, bossDefeated: this.bossDefeated, gold: this.gold, levels: { ...this.levels }, ability: this.ability,
+      heroHp: this.mode === 'boss' ? 0 : this.hero.hp, respawnIn: this.mode === 'boss' ? this.stats.respawn : this.respawnIn, cooldowns: { ...this.cooldowns } };
   }
 
   restore(data: SaveData) {
     this.reset();
     this.gold = data.gold; this.levels = { ...data.levels }; this.ability = data.ability;
+    this.floor = data.floor; this.bossDefeated = data.bossDefeated;
     this.populate();
     this.hero.hp = data.heroHp; this.cooldowns = { ...data.cooldowns }; this.respawnIn = data.respawnIn;
     if (this.hero.hp === 0) this.hero.state = 'dead';
@@ -87,7 +135,7 @@ export class CombatSimulation {
   }
 
   private actor(kind: Actor['kind'], x: number, y: number): Actor {
-    const maxHp = kind === 'hero' ? this.stats.maxHp : 68 + Math.floor(this.random() * 35);
+    const maxHp = kind === 'hero' ? this.stats.maxHp : kind === 'boss' ? BOSS.hp : Math.round((68 + Math.floor(this.random() * 35)) * floorById(this.floor).hp);
     return {
       id: this.nextId++, kind, x, y, hp: maxHp, maxHp,
       facing: x < 90 ? 1 : -1, state: 'idle', stateTime: 0,
@@ -103,6 +151,8 @@ export class CombatSimulation {
     this.elapsed = 0;
     this.gold = 0;
     this.levels = freshLevels();
+    this.floor = 1; this.bossDefeated = false; this.mode = 'farming'; this.bossSeconds = 0; this.bossResult = null;
+    this.farmingTime = 0; this.rewards = [];
     this.respawnIn = 0;
     this.spawnDelay = 0;
     this.cooldowns = { 'power-strike': 0.7, heal: 0 };
@@ -117,7 +167,7 @@ export class CombatSimulation {
     }
   }
 
-  setAbility(ability: Ability) { this.ability = ability; }
+  setAbility(ability: Ability) { if (this.mode === 'farming') this.ability = ability; }
 
   private changeState(actor: Actor, state: ActorState) {
     if (actor.state !== state) { actor.state = state; actor.stateTime = 0; }
@@ -127,7 +177,7 @@ export class CombatSimulation {
     if (target.hp <= 0 || source.hp <= 0) return;
     const damage = source.kind === 'hero'
       ? source.attackDamage
-      : DEMO.enemyAtk * 100 / (100 + this.stats.def);
+      : (source.kind === 'boss' ? BOSS.damage : DEMO.enemyAtk * floorById(this.floor).damage) * 100 / (100 + this.stats.def);
     target.hp = Math.max(0, target.hp - damage);
     target.flash = 0.08;
     target.flashKind = 'hit';
@@ -136,8 +186,13 @@ export class CombatSimulation {
     if (target.hp <= 0) {
       this.changeState(target, 'dead');
       this.events.push({ type: 'death', target: target.id, x: target.x, y: target.y });
-      if (target.kind === 'skeleton') this.gold = Math.min(MAX_GOLD, this.gold + 1);
-      else this.respawnIn = this.stats.respawn;
+      if (target.kind === 'skeleton') {
+        const amount = floorById(this.floor).reward;
+        this.gold = Math.min(MAX_GOLD, this.gold + amount);
+        this.rewards.push({ time: this.farmingTime, amount });
+      } else if (target.kind === 'boss') {
+        this.bossDefeated = true; this.mode = 'victory'; this.bossResult = 'victory';
+      } else this.respawnIn = this.stats.respawn;
     }
   }
 
@@ -154,6 +209,19 @@ export class CombatSimulation {
       actor.attackWait = Math.max(0, actor.attackWait - dt);
     }
 
+    if (this.mode === 'victory') return;
+    if (this.mode === 'boss') {
+      this.bossSeconds = Math.max(0, this.bossSeconds - dt);
+      if (this.hero.hp <= 0) {
+        if (this.hero.stateTime >= .7) this.loseBoss();
+        return;
+      }
+      if (this.bossSeconds === 0) { this.loseBoss(); return; }
+    } else {
+      this.farmingTime += dt;
+      this.rewards = this.rewards.filter(r => r.time > this.farmingTime - 60);
+    }
+
     if (this.hero.hp <= 0) {
       this.respawnIn = Math.max(0, this.respawnIn - dt);
       if (this.respawnIn === 0) {
@@ -163,7 +231,7 @@ export class CombatSimulation {
       return;
     }
 
-    if (this.ability === 'heal' && this.cooldowns.heal === 0 && this.hero.hp <= this.hero.maxHp * (1 - DEMO.healFraction)) {
+    if ((this.ability === 'heal' || this.bossDefeated) && this.cooldowns.heal === 0 && this.hero.hp <= this.hero.maxHp * (1 - DEMO.healFraction)) {
       const amount = this.hero.maxHp * DEMO.healFraction;
       this.hero.hp = Math.min(this.hero.maxHp, this.hero.hp + amount);
       this.hero.flash = 0.15;
@@ -173,19 +241,19 @@ export class CombatSimulation {
     }
 
     for (const actor of this.actors) {
-      if (actor.hp <= 0 || this.hero.hp <= 0) continue;
+      if (actor.hp <= 0 || this.hero.hp <= 0 || this.bossResult === 'victory') continue;
       if (actor.state === 'attack') {
-        if (!actor.hitDelivered && actor.stateTime >= DEMO.hitTime) {
+        if (!actor.hitDelivered && actor.stateTime >= (actor.kind === 'boss' ? BOSS.hitTime : DEMO.hitTime)) {
           actor.hitDelivered = true;
           const target = this.actors.find((candidate) => candidate.id === actor.attackTarget);
           if (target) this.hit(actor, target);
         }
-        if (actor.stateTime < DEMO.attackDuration) continue;
+        if (actor.stateTime < (actor.kind === 'boss' ? BOSS.attackDuration : DEMO.attackDuration)) continue;
         this.changeState(actor, 'idle');
       }
 
       const targets = actor.kind === 'hero'
-        ? this.actors.filter((candidate) => candidate.kind === 'skeleton' && candidate.hp > 0)
+        ? this.actors.filter((candidate) => candidate.kind !== 'hero' && candidate.hp > 0)
         : [this.hero];
       const target = targets.sort((a, b) => Math.hypot(a.x - actor.x, a.y - actor.y) - Math.hypot(b.x - actor.x, b.y - actor.y))[0];
       if (!target) { this.changeState(actor, 'idle'); continue; }
@@ -193,20 +261,21 @@ export class CombatSimulation {
       const dy = target.y - actor.y;
       const distance = Math.hypot(dx, dy);
       if (Math.abs(dx) > 2) actor.facing = dx >= 0 ? 1 : -1;
-      if (distance > DEMO.attackRange + DISTANCE_EPSILON) {
+      const range = actor.kind === 'boss' || target.kind === 'boss' ? BOSS.range : DEMO.attackRange;
+      if (distance > range + DISTANCE_EPSILON) {
         this.changeState(actor, 'walk');
         const speed = actor.kind === 'hero' ? DEMO.heroSpeed : DEMO.skeletonSpeed;
-        const travel = Math.min(speed * dt, distance - (DEMO.attackRange - MELEE_ARRIVAL_MARGIN));
+        const travel = Math.min(speed * dt, distance - (range - MELEE_ARRIVAL_MARGIN));
         actor.x += dx / distance * travel;
         actor.y += dy / distance * travel;
       } else if (actor.attackWait === 0) {
         this.changeState(actor, 'attack');
         actor.attackTarget = target.id;
         actor.hitDelivered = false;
-        actor.attackPower = actor.kind === 'hero' && this.ability === 'power-strike' && this.cooldowns['power-strike'] === 0;
+        actor.attackPower = actor.kind === 'hero' && (this.ability === 'power-strike' || this.bossDefeated) && this.cooldowns['power-strike'] === 0;
         actor.attackDamage = actor.kind === 'hero' ? this.stats.atk * (actor.attackPower ? DEMO.powerMultiplier : 1) : DEMO.enemyAtk;
         if (actor.attackPower) this.cooldowns['power-strike'] = DEMO.powerCooldown;
-        actor.attackWait = actor.kind === 'hero' ? DEMO.attackInterval : DEMO.enemyAttackInterval;
+        actor.attackWait = actor.kind === 'hero' ? DEMO.attackInterval : actor.kind === 'boss' ? BOSS.interval : DEMO.enemyAttackInterval;
       } else {
         this.changeState(actor, 'idle');
       }
@@ -219,8 +288,9 @@ export class CombatSimulation {
         const a = living[i]; const b = living[j];
         const dx = b.x - a.x; const dy = b.y - a.y;
         const distance = Math.hypot(dx, dy);
-        if (distance < 22 && distance > 0.01) {
-          const push = (22 - distance) * Math.min(0.5, dt * 4);
+        const separation = a.kind === 'boss' || b.kind === 'boss' ? 35 : 22;
+        if (distance < separation && distance > 0.01) {
+          const push = (separation - distance) * Math.min(0.5, dt * 4);
           a.x -= dx / distance * push; a.y -= dy / distance * push;
           b.x += dx / distance * push; b.y += dy / distance * push;
         }
@@ -231,7 +301,8 @@ export class CombatSimulation {
       actor.y = Math.max(60, Math.min(222, actor.y));
     }
 
-    this.actors = this.actors.filter((actor) => actor.kind === 'hero' || actor.hp > 0 || actor.stateTime < 0.45);
+    if (this.mode !== 'farming') return;
+    this.actors = this.actors.filter((actor) => actor.kind === 'hero' || actor.hp > 0 || actor.stateTime < 0.75);
     this.spawnDelay = Math.max(0, this.spawnDelay - dt);
     if (this.actors.filter((actor) => actor.kind === 'skeleton').length < 5 && this.spawnDelay === 0) {
       const positions = [[40, 70], [140, 78], [39, 210], [134, 218], [86, 65]];

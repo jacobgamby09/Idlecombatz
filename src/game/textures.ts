@@ -60,6 +60,44 @@ export function buildEffectTextures(scene: Phaser.Scene) {
   }
 }
 
+interface ExpansionAsset {
+  key: string; chromaKey: boolean; canvas: [number, number]; pivot: [number, number];
+  artPixelsPerSourcePixel: number; frames: SourceFrame[];
+}
+
+export function buildExpansionTextures(scene: Phaser.Scene) {
+  const metadata = scene.cache.json.get('expansion-loading') as { assets: ExpansionAsset[] };
+  for (const asset of metadata.assets) {
+    const image = scene.textures.get(`${asset.key}-source`).getSourceImage() as HTMLImageElement;
+    const source = document.createElement('canvas');
+    source.width = image.naturalWidth; source.height = image.naturalHeight;
+    const pixels = source.getContext('2d', { willReadFrequently: true })!;
+    pixels.drawImage(image, 0, 0);
+    if (asset.chromaKey) {
+      const data = pixels.getImageData(0, 0, source.width, source.height);
+      for (let i = 0; i < data.data.length; i += 4) {
+        const [r, g, b] = [data.data[i], data.data[i + 1], data.data[i + 2]];
+        if (r > 45 && b > 45 && r > g * 2 && b > g * 2 && b / r > .65) data.data[i + 3] = 0;
+      }
+      pixels.putImageData(data, 0, 0);
+    }
+    for (const frame of asset.frames) {
+      const texture = scene.textures.createCanvas(`${asset.key}-${frame.frame}`, ...asset.canvas)!;
+      const context = texture.getContext(); context.imageSmoothingEnabled = false;
+      const { x, y, width, height } = frame.sourceRect;
+      const scale = asset.artPixelsPerSourcePixel;
+      context.drawImage(source, x, y, width, height,
+        Math.round(asset.pivot[0] - frame.sourcePivot[0] * scale), Math.round(asset.pivot[1] - frame.sourcePivot[1] * scale),
+        Math.round(width * scale), Math.round(height * scale));
+      texture.refresh();
+    }
+  }
+  const crypt = scene.textures.createCanvas('crypt', 180, 244)!;
+  crypt.getContext().imageSmoothingEnabled = false;
+  crypt.getContext().drawImage(scene.textures.get('crypt-source').getSourceImage() as HTMLImageElement, 0, 0, 180, 244);
+  crypt.refresh();
+}
+
 const digits: Record<string, string[]> = {
   '0': ['111', '101', '101', '101', '111'],
   '1': ['010', '110', '010', '010', '111'],

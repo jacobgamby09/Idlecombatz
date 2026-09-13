@@ -11,7 +11,11 @@ const bounded = (value: unknown, max: number): value is number =>
 
 export function parseSave(raw: string): SaveData {
   const data: unknown = JSON.parse(raw);
-  if (!record(data) || data.version !== 1 || !record(data.levels) || !record(data.cooldowns)) throw new Error('Unsupported save');
+  if (!record(data) || (data.version !== 1 && data.version !== 2) || !record(data.levels) || !record(data.cooldowns)) throw new Error('Unsupported save');
+  const floor = data.version === 1 ? 1 : data.floor;
+  const bossDefeated = data.version === 1 ? false : data.bossDefeated;
+  if (!bounded(floor, 4) || !Number.isInteger(floor) || floor < 1 || typeof bossDefeated !== 'boolean'
+    || (floor === 4 && !bossDefeated)) throw new Error('Invalid world progress');
   for (const id of UPGRADE_IDS) {
     if (!bounded(data.levels[id], UPGRADES[id].cap) || !Number.isInteger(data.levels[id])) throw new Error('Invalid level');
   }
@@ -24,7 +28,7 @@ export function parseSave(raw: string): SaveData {
     || !bounded(data.cooldowns['power-strike'], DEMO.powerCooldown)
     || (data.heroHp > 0 && data.respawnIn !== 0)
     || (data.heroHp === 0 && data.respawnIn === 0)) throw new Error('Invalid save');
-  return { version: 1, gold: data.gold, levels, ability: data.ability, heroHp: data.heroHp,
+  return { version: 2, floor, bossDefeated, gold: data.gold, levels, ability: data.ability, heroHp: data.heroHp,
     respawnIn: data.respawnIn, cooldowns: { heal: data.cooldowns.heal, 'power-strike': data.cooldowns['power-strike'] } };
 }
 

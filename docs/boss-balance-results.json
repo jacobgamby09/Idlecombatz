@@ -1,0 +1,311 @@
+{
+  "seeds": [
+    41,
+    7,
+    123
+  ],
+  "results": [
+    {
+      "build": "Unupgraded",
+      "budget": 0,
+      "spent": 0,
+      "levels": {
+        "atk": 0,
+        "hp": 0,
+        "def": 0,
+        "respawn": 0
+      },
+      "runs": [
+        {
+          "won": false,
+          "seconds": 13.2,
+          "hp": 0
+        },
+        {
+          "won": false,
+          "seconds": 13.8,
+          "hp": 0
+        },
+        {
+          "won": false,
+          "seconds": 13.4,
+          "hp": 0
+        }
+      ]
+    },
+    {
+      "build": "Attack",
+      "budget": 120,
+      "spent": 119,
+      "levels": {
+        "atk": 9,
+        "hp": 0,
+        "def": 0,
+        "respawn": 0
+      },
+      "runs": [
+        {
+          "won": false,
+          "seconds": 13.2,
+          "hp": 0
+        },
+        {
+          "won": false,
+          "seconds": 13.8,
+          "hp": 0
+        },
+        {
+          "won": false,
+          "seconds": 13.4,
+          "hp": 0
+        }
+      ]
+    },
+    {
+      "build": "Mixed",
+      "budget": 120,
+      "spent": 120,
+      "levels": {
+        "atk": 5,
+        "hp": 5,
+        "def": 5,
+        "respawn": 0
+      },
+      "runs": [
+        {
+          "won": false,
+          "seconds": 28,
+          "hp": 0
+        },
+        {
+          "won": false,
+          "seconds": 28.6,
+          "hp": 0
+        },
+        {
+          "won": false,
+          "seconds": 28.2,
+          "hp": 0
+        }
+      ]
+    },
+    {
+      "build": "Sustain",
+      "budget": 120,
+      "spent": 116,
+      "levels": {
+        "atk": 0,
+        "hp": 7,
+        "def": 6,
+        "respawn": 0
+      },
+      "runs": [
+        {
+          "won": true,
+          "seconds": 75.1,
+          "hp": 90.8
+        },
+        {
+          "won": true,
+          "seconds": 75.1,
+          "hp": 90.8
+        },
+        {
+          "won": true,
+          "seconds": 75.1,
+          "hp": 90.8
+        }
+      ]
+    },
+    {
+      "build": "Attack",
+      "budget": 240,
+      "spent": 216,
+      "levels": {
+        "atk": 12,
+        "hp": 0,
+        "def": 0,
+        "respawn": 0
+      },
+      "runs": [
+        {
+          "won": false,
+          "seconds": 13.2,
+          "hp": 0
+        },
+        {
+          "won": false,
+          "seconds": 13.8,
+          "hp": 0
+        },
+        {
+          "won": false,
+          "seconds": 13.4,
+          "hp": 0
+        }
+      ]
+    },
+    {
+      "build": "Mixed",
+      "budget": 240,
+      "spent": 223,
+      "levels": {
+        "atk": 8,
+        "hp": 7,
+        "def": 7,
+        "respawn": 0
+      },
+      "runs": [
+        {
+          "won": true,
+          "seconds": 25.1,
+          "hp": 153.4
+        },
+        {
+          "won": true,
+          "seconds": 25.1,
+          "hp": 153.4
+        },
+        {
+          "won": true,
+          "seconds": 25.1,
+          "hp": 153.4
+        }
+      ]
+    },
+    {
+      "build": "Sustain",
+      "budget": 240,
+      "spent": 226,
+      "levels": {
+        "atk": 0,
+        "hp": 10,
+        "def": 9,
+        "respawn": 0
+      },
+      "runs": [
+        {
+          "won": true,
+          "seconds": 75.1,
+          "hp": 449.6
+        },
+        {
+          "won": true,
+          "seconds": 75.1,
+          "hp": 449.6
+        },
+        {
+          "won": true,
+          "seconds": 75.1,
+          "hp": 449.6
+        }
+      ]
+    },
+    {
+      "build": "Attack",
+      "budget": 480,
+      "spent": 445,
+      "levels": {
+        "atk": 16,
+        "hp": 0,
+        "def": 0,
+        "respawn": 0
+      },
+      "runs": [
+        {
+          "won": false,
+          "seconds": 13.2,
+          "hp": 0
+        },
+        {
+          "won": false,
+          "seconds": 13.8,
+          "hp": 0
+        },
+        {
+          "won": false,
+          "seconds": 13.4,
+          "hp": 0
+        }
+      ]
+    },
+    {
+      "build": "Mixed",
+      "budget": 480,
+      "spent": 475,
+      "levels": {
+        "atk": 11,
+        "hp": 11,
+        "def": 11,
+        "respawn": 0
+      },
+      "runs": [
+        {
+          "won": true,
+          "seconds": 21.1,
+          "hp": 351
+        },
+        {
+          "won": true,
+          "seconds": 21.1,
+          "hp": 373.5
+        },
+        {
+          "won": true,
+          "seconds": 21.1,
+          "hp": 373.5
+        }
+      ]
+    },
+    {
+      "build": "Sustain",
+      "budget": 480,
+      "spent": 434,
+      "levels": {
+        "atk": 0,
+        "hp": 13,
+        "def": 13,
+        "respawn": 0
+      },
+      "runs": [
+        {
+          "won": true,
+          "seconds": 75.1,
+          "hp": 550.8
+        },
+        {
+          "won": true,
+          "seconds": 75.1,
+          "hp": 550.8
+        },
+        {
+          "won": true,
+          "seconds": 75.1,
+          "hp": 550.8
+        }
+      ]
+    }
+  ],
+  "floors": [
+    {
+      "floor": 1,
+      "goldPerMinute": 28.7,
+      "deaths": 2
+    },
+    {
+      "floor": 2,
+      "goldPerMinute": 44.6,
+      "deaths": 5
+    },
+    {
+      "floor": 3,
+      "goldPerMinute": 58.8,
+      "deaths": 11
+    },
+    {
+      "floor": 4,
+      "goldPerMinute": 66.6,
+      "deaths": 9
+    }
+  ]
+}

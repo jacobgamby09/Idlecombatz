@@ -3,8 +3,10 @@ import { CombatSimulation } from './simulation';
 import type { Actor, Ability, CombatEvent } from './simulation';
 import type { SceneController, UpgradeId } from './types';
 import { DEMO } from './balance';
+import { BOSS } from './world';
+import { actorTexture, actorOpacity } from './animation';
 import { SaveStore } from './save';
-import { buildCharacterTextures, buildDungeonTexture, buildEffectTextures, numberTexture } from './textures';
+import { buildCharacterTextures, buildDungeonTexture, buildEffectTextures, buildExpansionTextures, numberTexture } from './textures';
 
 interface ActorView {
   sprite: Phaser.GameObjects.Image;
@@ -15,7 +17,7 @@ interface Effect {
   sprite: Phaser.GameObjects.Image;
   start: number;
   duration: number;
-  kind: 'slash' | 'impact' | 'number';
+  kind: 'slash' | 'impact' | 'boss-impact' | 'number';
   x: number; y: number;
   scale: number;
 }
@@ -46,6 +48,7 @@ export function createGame(parent: HTMLElement) {
     private sparks: Spark[] = [];
     private glow: Phaser.GameObjects.Graphics | undefined;
     private respawn: Phaser.GameObjects.Text | undefined;
+    private environment: Phaser.GameObjects.Image | undefined;
 
     constructor() { super('dungeon'); }
 
@@ -63,13 +66,20 @@ export function createGame(parent: HTMLElement) {
       this.load.image('skeleton-source', '/assets/characters/skeleton-sheet.png');
       this.load.json('character-loading', '/assets/characters/loading.json');
       this.load.image('combat-source', '/assets/effects/combat-alpha.png');
+      this.load.image('boss-source', '/assets/boss/goblin-king-sheet.png');
+      this.load.image('hero-extra-source', '/assets/characters/extensions/hero-hurt-death.png');
+      this.load.image('skeleton-extra-source', '/assets/characters/extensions/skeleton-hurt-death.png');
+      this.load.image('boss-impact-source', '/assets/boss/impact.png');
+      this.load.image('crypt-source', '/assets/environment/moss-crypt.png');
+      this.load.json('expansion-loading', '/assets/boss/loading.json');
     }
 
     create() {
       buildDungeonTexture(this);
       buildCharacterTextures(this);
       buildEffectTextures(this);
-      this.add.image(90, 122, 'dungeon').setDepth(-10);
+      buildExpansionTextures(this);
+      this.environment = this.add.image(90, 122, 'dungeon').setDepth(-10);
       this.glow = this.add.graphics().setDepth(-5);
       this.respawn = this.add.text(90, 132, '', {
         fontFamily: 'Inter, sans-serif', fontSize: '7px', fontStyle: 'bold',
@@ -110,11 +120,20 @@ export function createGame(parent: HTMLElement) {
       this.drawScene();
     }
 
+    advance(seconds: number) {
+      inspecting = true; paused = true;
+      for (let tick = 0; tick < Math.round(seconds * 60); tick++) {
+        simulation.step(1 / 60);
+        simulation.drainEvents().forEach(event => this.combatEvent(event));
+      }
+      this.drawScene();
+    }
+
     private actorView(actor: Actor) {
       let view = this.views.get(actor.id);
       if (!view) {
-        const shadow = this.add.image(actor.x, actor.y - 1, 'contact-shadow').setAlpha(0.55).setScale(actor.kind === 'hero' ? 1 : 0.85);
-        const sprite = this.add.image(actor.x, actor.y, `${actor.kind}-0`).setOrigin(0.5, 40 / 48);
+        const shadow = this.add.image(actor.x, actor.y - 1, 'contact-shadow').setAlpha(0.55).setScale(actor.kind === 'boss' ? 2.1 : actor.kind === 'hero' ? 1 : 0.85);
+        const sprite = this.add.image(actor.x, actor.y, `${actor.kind}-0`).setOrigin(0.5, actor.kind === 'boss' ? 82 / 96 : 40 / 48);
         const bar = this.add.graphics();
         view = { sprite, shadow, bar };
         this.views.set(actor.id, view);
@@ -127,17 +146,17 @@ export function createGame(parent: HTMLElement) {
       const color = heal ? '#84fa81' : power ? '#ffd16c' : actor.kind === 'hero' ? '#ed6973' : '#ff6238';
       const texture = numberTexture(this, label, color);
       const x = actor.x + (actor.facing > 0 ? 5 : -5);
-      const y = actor.y - (actor.kind === 'hero' ? 29 : 27);
+      const y = actor.y - (actor.kind === 'boss' ? 56 : actor.kind === 'hero' ? 29 : 27);
       const sprite = this.add.image(x, y, texture).setDepth(600);
       const numbers = this.effects.filter((effect) => effect.kind === 'number');
       if (numbers.length >= 8) { numbers[0].duration = 0; }
       this.effects.push({ sprite, start: simulation.elapsed, duration: 0.7, kind: 'number', x, y, scale: power ? 1.25 : 1 });
     }
 
-    private addEffect(kind: 'slash' | 'impact', x: number, y: number, scale: number, angle: number) {
-      const sprite = this.add.image(x, y, `combat-${kind === 'slash' ? 0 : 4}`)
+    private addEffect(kind: 'slash' | 'impact' | 'boss-impact', x: number, y: number, scale: number, angle: number) {
+      const sprite = this.add.image(x, y, kind === 'boss-impact' ? 'boss-impact-0' : `combat-${kind === 'slash' ? 0 : 4}`)
         .setDepth(350).setScale(scale).setRotation(kind === 'slash' ? angle - 0.2 : 0);
-      this.effects.push({ sprite, start: simulation.elapsed, duration: kind === 'slash' ? 0.24 : 0.2, kind, x, y, scale });
+      this.effects.push({ sprite, start: simulation.elapsed, duration: kind === 'boss-impact' ? .32 : kind === 'slash' ? 0.24 : 0.2, kind, x, y, scale });
     }
 
     private addSparks(x: number, y: number, heal = false, count = 5) {
@@ -169,24 +188,22 @@ export function createGame(parent: HTMLElement) {
         this.addEffect('slash', source.x, source.y - 13, event.power ? 0.88 : 0.53, event.angle);
         this.addEffect('impact', target.x, target.y - 12, event.power ? 0.44 : 0.26, 0);
         this.addSparks(target.x, target.y - 12, false, event.power ? 7 : 3);
+      } else if (source?.kind === 'boss') {
+        this.addEffect('boss-impact', target.x, target.y - 5, .8, 0);
       }
     }
 
     private drawScene() {
+      this.environment?.setTexture(simulation.region === 'crypt' ? 'crypt' : 'dungeon');
       const liveIds = new Set(simulation.actors.map((actor) => actor.id));
       for (const [id, view] of this.views) {
         if (!liveIds.has(id)) { view.sprite.destroy(); view.shadow.destroy(); view.bar.destroy(); this.views.delete(id); }
       }
       for (const actor of simulation.actors) {
         const view = this.actorView(actor);
-        let frame: number;
-        if (actor.state === 'attack') {
-          frame = actor.stateTime < 0.065 ? 8 : actor.stateTime < 0.12 ? 9 : actor.stateTime < 0.195 ? 10 : 11;
-        } else if (actor.state === 'walk') frame = 4 + Math.floor(actor.stateTime * 9) % 4;
-        else frame = Math.floor((actor.stateTime + actor.id * 0.17) * 4) % 4;
         const dead = actor.state === 'dead';
-        const fade = dead ? Math.max(0, 1 - actor.stateTime / 0.4) : Math.min(1, actor.spawnTime / 0.2);
-        view.sprite.setTexture(`${actor.kind}-${frame}`).setPosition(Math.round(actor.x), Math.round(actor.y))
+        const fade = actorOpacity(actor);
+        view.sprite.setTexture(actorTexture(actor)).setPosition(Math.round(actor.x), Math.round(actor.y))
           .setFlipX(actor.facing < 0).setDepth(actor.y).setAlpha(fade);
         if (actor.flash > 0 && actor.hp > 0) view.sprite.setTint(actor.flashKind === 'heal' ? 0xa8ffbe : 0xffc1b4);
         else view.sprite.clearTint();
@@ -211,7 +228,7 @@ export function createGame(parent: HTMLElement) {
           effect.sprite.setScale(effect.scale).setAlpha(Math.min(1, (1 - progress) * 4));
         } else {
           const frame = Math.min(3, Math.floor(progress * 4)) + (effect.kind === 'impact' ? 4 : 0);
-          effect.sprite.setTexture(`combat-${frame}`).setAlpha(reducedMotion.matches ? 0.7 : 1);
+          effect.sprite.setTexture(effect.kind === 'boss-impact' ? `boss-impact-${Math.min(3, Math.floor(progress * 4))}` : `combat-${frame}`).setAlpha(reducedMotion.matches ? 0.7 : 1);
         }
         return true;
       });
@@ -236,7 +253,7 @@ export function createGame(parent: HTMLElement) {
             .fillRect(Math.round(x + Math.sin(now * 2 + i) * 2), Math.round(48 - phase * 10), 1, 1);
         }
       }
-      this.respawn?.setText(simulation.respawnIn > 0 ? `Respawning: ${simulation.respawnIn.toFixed(1)}s` : '').setVisible(simulation.respawnIn > 0);
+      this.respawn?.setText(simulation.respawnIn > 0 ? `Respawning: ${simulation.respawnIn.toFixed(1)}s` : '').setVisible(simulation.respawnIn > 0 && simulation.mode === 'farming');
     }
 
     update(_time: number, delta: number) {
@@ -244,7 +261,9 @@ export function createGame(parent: HTMLElement) {
       if (!paused && !document.hidden) {
         accumulator += Math.min(delta / 1000, 0.1);
         while (accumulator >= 1 / 60) {
+          const won = simulation.bossDefeated;
           simulation.step(1 / 60);
+          if (!won && simulation.bossDefeated) persist();
           simulation.drainEvents().forEach((event) => this.combatEvent(event));
           accumulator -= 1 / 60;
         }
@@ -285,8 +304,17 @@ export function createGame(parent: HTMLElement) {
     },
     setAbility(ability: Ability) { simulation.setAbility(ability); persist(); },
     buyUpgrade(id: UpgradeId) { const result = simulation.buyUpgrade(id); if (result.ok) persist(); return result; },
+    setFloor(id: number) { const result = simulation.setFloor(id); if (result.ok) { sceneInstance?.resetVisuals(); persist(); } return result; },
+    startBoss() { const result = simulation.startBoss(); if (result.ok) { sceneInstance?.resetVisuals(); persist(); } return result; },
+    leaveBoss() { simulation.leaveBoss(); sceneInstance?.resetVisuals(); persist(); },
     getSnapshot() {
       return {
+        floor: simulation.floor, region: simulation.region, mode: simulation.mode, bossDefeated: simulation.bossDefeated,
+        bossHp: simulation.actors.find(actor => actor.kind === 'boss')?.hp ?? 0, bossMaxHp: BOSS.hp,
+        bossSeconds: simulation.bossSeconds, bossResult: simulation.bossResult, goldPerMinute: simulation.goldPerMinute,
+        victoryReady: simulation.mode === 'victory' && (simulation.actors.find(actor => actor.kind === 'boss')?.stateTime ?? 0) >= .96,
+        secondaryCooldown: simulation.cooldowns[simulation.ability === 'heal' ? 'power-strike' : 'heal'],
+        secondaryMaxCooldown: simulation.ability === 'heal' ? DEMO.powerCooldown : DEMO.healCooldown,
         heroHp: simulation.hero.hp, maxHp: simulation.hero.maxHp, gold: simulation.gold,
         stats: simulation.stats, ability: simulation.ability, upgrades: simulation.upgrades,
         abilities: {
@@ -309,6 +337,8 @@ export function createGame(parent: HTMLElement) {
   if (import.meta.env.DEV) {
     Object.assign(window, { __IDLECOMBATZ__: { controller, simulation,
       capturePowerStrike: () => sceneInstance?.capturePowerStrike(),
+      advance: (seconds: number) => sceneInstance?.advance(seconds),
+      get scene() { return sceneInstance; },
       get ready() { return ready; },
     } });
   }
