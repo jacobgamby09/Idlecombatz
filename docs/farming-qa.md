@@ -28,6 +28,22 @@ På korte skærme var den fjerde upgrade delvist skjult. Panelet har nu plads ti
 - [Upgrades på desktop](../artifacts/farming-upgrades-desktop.png)
 - [Bevægende combat under upgrade-forløbet](../artifacts/farming-loop.webm) — browserens canvas optaget med MediaRecorder; HTML-panelet indgår ikke i denne optagelse.
 
+## Opfølgning 2026-09-13: lille arena efter Upgrades
+
+Brugerens iPhone-billede viste, at canvas blev ved med at være lille, når Upgrades blev lukket. Fejlen er reproduceret lokalt: I en arena på 382 × 534 CSS-pixels blev canvas stående på cirka 277 × 388 i stedet for 381 × 534. Den tidligere kontrol af aspect ratio opdagede ikke dette, fordi billedets proportioner stadig var rigtige.
+
+Phaser FIT brugte gamle parent-dimensioner ved `setGameSize()`. Refresh opdaterede først parent-cache efter skaleringen, så et efterfølgende automatisk tjek ikke nødvendigvis rettede fejlen. Renderer læser nu aktuelle parent-bounds før opstart/resize-skaleringsberegningen.
+
+`scripts/check-arena-layout.js` er en browser-regression, der måler faktisk canvas-størrelse og centrering mod den aktuelle arena efter gentagen åbning/lukning af Upgrades, i både pause og kørende combat. Kør efter åbning af en indlæst app:
+
+```powershell
+Get-Content -Raw scripts/check-arena-layout.js | npx --yes agent-browser --session arena-fix eval --stdin
+```
+
+16 målinger passerer på hver af 390 × 844 og 360 × 640. Derudover er HP-køb under respawn efterfulgt af lukning kontrolleret med `0/256 HP`, som på brugerens billede. Alle 19 unit-tests og production-build passerer. Ingen browserfejl registreret. Dette er fortsat Chromium-emulering, ikke en fysisk Safari-test.
+
+[Før rettelsen](../artifacts/arena-close-before.png) · [Efter rettelsen, HP-køb under respawn](../artifacts/arena-close-after.png).
+
 ## Praktiske grænser
 
 Mobilkontrollen er browser-emulering, ikke en fysisk iPhone-test. Saving er lokal pr. browser/domæne; der er ingen cross-device-sync, sammenfletning mellem faner eller offline fremgang. Et pludseligt nedbrud kan miste tiden siden sidste vellykkede save. Reload genskaber enemies og positioner, men bevarer heroens HP, cooldowns og eventuelle respawn-tid.

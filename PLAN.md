@@ -94,6 +94,8 @@ Første milepæl er færdig, når den automatiske kamp, upgrades, ability-valg, 
 
 Efter første arena er afprøvet:
 
+Den konkrete næste gameplay-leverance bruger eksisterende skeletter og abilities plus en ny boss. Enemy-archetypes og Whirlwind fra udvidelseslisten nedenfor følger bagefter. [Art-planen](docs/floors-boss-art-plan.md) fastlægger sprite-produktionen. Alle floors i første område og bossforsøget deler samme dungeon; bosssejr åbner første floor i område 2, hvor miljøet først skifter. Tidligere floors beholder deres oprindelige dungeon.
+
 1. Tilføj tre valgbare farming-floors med forskellige stats og rewards. Lad hele den første sektion være tilgængelig, så effektivitet styrer valget.
 2. Tilføj de øvrige enemy-archetypes og Whirlwind, så AoE-farming kan konkurrere med single-target og sustain.
 3. Vis gold/min over et rullende interval, hvor dødstid tæller med.

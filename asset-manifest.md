@@ -183,3 +183,9 @@ Faktiske genereringsprompts: [characters](art-prompts/characters.md), [environme
 - [x] Hver HP-/damage-/cooldown-visning kan forklares af den aktuelle demohændelse.
 - [x] Screenshot ved 360 × 796 og kort bevægelig sekvens er kontrolleret; 360 × 640, 390 × 844 og desktop tilpasser uden blur eller vandret scroll.
 - [x] Resterende afvigelser er dokumenteret. Denne prøves afslutning er adskilt fra hele farming-milepælens acceptliste.
+
+## Næste produktionssæt — 2026-09-13
+
+[Art-planen for floors og boss](docs/floors-boss-art-plan.md) fastlægger næste sæt: Goblin King med 22 character-frames, hurt/death-udvidelser til hero og skelet, boss-portræt/impact, slot-unlock-feedback og ét nyt miljø til området efter bossen. Disse nye assets er planlagte, ikke producerede. Alle floors før bossen og selve bossforsøget genbruger den eksisterende dungeon uændret.
+
+Gameplay-status: Upgrades og lokal save er nu implementeret og dækket af 19 tests; se [farming-QA](docs/farming-qa.md). De historiske proof-tabeller ovenfor beskriver første art-leverance og dens daværende status.

@@ -76,6 +76,7 @@ export function createGame(parent: HTMLElement) {
         color: '#ddd6d0', backgroundColor: '#181827', padding: { x: 7, y: 5 },
       }).setOrigin(0.5).setDepth(1000);
       const height = nativeHeight();
+      this.scale.getParentBounds();
       this.scale.setGameSize(180, height);
       this.cameras.main.setSize(180, height).setScroll(0, (244 - height) / 2).setRoundPixels(true);
       sceneInstance = this;
@@ -262,6 +263,9 @@ export function createGame(parent: HTMLElement) {
   });
   const observer = new ResizeObserver(() => {
     if (ready) {
+      // FIT reads cached parent dimensions before refresh updates them. Read the
+      // new layout first, otherwise closing Upgrades leaves a small canvas.
+      game.scale.getParentBounds();
       game.scale.setGameSize(180, nativeHeight());
       sceneInstance?.cameras.main.setSize(180, nativeHeight()).setScroll(0, (244 - nativeHeight()) / 2);
     }

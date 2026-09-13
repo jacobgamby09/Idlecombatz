@@ -520,3 +520,7 @@ Følgende opfylder ikke denne specifikation:
 8. Ret synlige afvigelser, før flere floors og større systemer udvides.
 
 Denne specifikation erstatter formuleringer om en “Modern Pixel-inspireret” prototype i den oprindelige plan. Referencen er udseendet, vi bygger frem mod.
+
+## Områder og floor-skift — præcisering 2026-09-13
+
+Dungeon-miljøet er fælles for alle floors indenfor samme område. Floor 1–3 og den første boss bruger den eksisterende dungeon uændret. Først efter bosssejr, ved indgang til det næste område, skifter miljøet. Retur til et tidligere floor viser det tidligere områdes miljø. Floor-skift giver ikke i sig selv nye baggrunde, paletteskift eller anderledes props. Se [art-planen](docs/floors-boss-art-plan.md) for sprites, animationer og område 2.
