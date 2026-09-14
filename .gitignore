@@ -26,3 +26,12 @@ artifacts/*
 !artifacts/boss-desktop.png
 !artifacts/boss-art-study.png
 !artifacts/boss-loop.webm
+!artifacts/dungeon-360x640.png
+!artifacts/dungeon-360x796.png
+!artifacts/dungeon-390x844.png
+!artifacts/dungeon-desktop.png
+!artifacts/dungeon-boss-360.png
+!artifacts/dungeon-crypt-360.png
+!artifacts/dungeon-map-390.png
+!artifacts/dungeon-upgrades-360.png
+!artifacts/dungeon-motion.webm

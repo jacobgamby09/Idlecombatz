@@ -1,5 +1,11 @@
 # IdleCombatz — startplan
 
+## Aktuel implementation — dungeon-pivot, 2026-09-14
+
+[Den komplette dungeon-pivot-plan](docs/dungeon-pivot-plan.md) er nu omsat til sammenhængende floors med rum, automatisk udforskning/kamp/loot og midlertidige spillerordrer. Fire layouts, boss/krypt, modulært miljø, kort og save v3 er implementeret. [Dungeon-QA](docs/dungeon-qa.md) registrerer verifikation, balance og udgivelsesstatus; det er facit for, hvilke kontroller der faktisk er gennemført.
+
+Resten af dette dokument bevarer den oprindelige arena-plan og leverancehistorik. Boss, Slot II, Floor 4 og hurt/death-clips er siden leveret, som beskrevet under milepæl 2 og i [boss-QA](docs/boss-qa.md); ældre statusafsnit nedenfor skal læses historisk.
+
 Status: Den animerede scene og farming-leverancen med upgrades, lokal save og balanceprøve er implementeret og kontrolleret. Se [farming-QA](docs/farming-qa.md), [balancerapport](docs/balance-qa.md) og de resterende visuelle forskelle i [docs/visual-qa.md](docs/visual-qa.md). Lyd og dedikerede hurt-/death-clips fra den samlede milepæl er endnu ikke leveret.
 
 Den gennemførte leverance er beskrevet i [implementeringsplanen for upgrades, save og balance](docs/farming-implementation.md). Den bygger videre på den eksisterende kampmodel, inklusive rettelsen af fastlåsning ved melee-grænsen. Næste gameplay-leverance er tre floors og første boss med andet ability slot som belønning.

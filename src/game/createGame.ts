@@ -6,6 +6,7 @@ import { DEMO } from './balance';
 import { BOSS } from './world';
 import { actorTexture, actorOpacity } from './animation';
 import { SaveStore } from './save';
+import { buildTileTextures, DungeonView, center } from './dungeon/render';
 import { buildCharacterTextures, buildDungeonTexture, buildEffectTextures, buildExpansionTextures, numberTexture } from './textures';
 
 interface ActorView {
@@ -40,15 +41,14 @@ export function createGame(parent: HTMLElement) {
   let accumulator = 0;
   let sceneInstance: DungeonScene | undefined;
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-  const nativeHeight = () => Math.max(180, Math.min(280, Math.round(parent.clientHeight / Math.max(1, parent.clientWidth) * 180)));
+  const nativeHeight = () => Math.max(96, Math.min(360, Math.round(parent.clientHeight / Math.max(1, parent.clientWidth) * 180)));
 
   class DungeonScene extends Phaser.Scene {
     private views = new Map<number, ActorView>();
     private effects: Effect[] = [];
     private sparks: Spark[] = [];
-    private glow: Phaser.GameObjects.Graphics | undefined;
     private respawn: Phaser.GameObjects.Text | undefined;
-    private environment: Phaser.GameObjects.Image | undefined;
+    private worldView: DungeonView | undefined;
 
     constructor() { super('dungeon'); }
 
@@ -62,6 +62,7 @@ export function createGame(parent: HTMLElement) {
         console.error(`Unable to load game asset: ${file.key}`);
       });
       this.load.image('dungeon-source', '/assets/environment/dungeon.png');
+      this.load.image('atlas-source', '/assets/environment/dungeon-atlas-alpha.png');
       this.load.image('hero-source', '/assets/characters/hero-sheet.png');
       this.load.image('skeleton-source', '/assets/characters/skeleton-sheet.png');
       this.load.json('character-loading', '/assets/characters/loading.json');
@@ -79,16 +80,26 @@ export function createGame(parent: HTMLElement) {
       buildCharacterTextures(this);
       buildEffectTextures(this);
       buildExpansionTextures(this);
-      this.environment = this.add.image(90, 122, 'dungeon').setDepth(-10);
-      this.glow = this.add.graphics().setDepth(-5);
+      buildTileTextures(this);
+      this.worldView = new DungeonView(this);
       this.respawn = this.add.text(90, 132, '', {
         fontFamily: 'Inter, sans-serif', fontSize: '7px', fontStyle: 'bold',
         color: '#ddd6d0', backgroundColor: '#181827', padding: { x: 7, y: 5 },
-      }).setOrigin(0.5).setDepth(1000);
+      }).setOrigin(0.5).setDepth(11000).setScrollFactor(0);
       const height = nativeHeight();
       this.scale.getParentBounds();
       this.scale.setGameSize(180, height);
-      this.cameras.main.setSize(180, height).setScroll(0, (244 - height) / 2).setRoundPixels(true);
+      this.cameras.main.setSize(180, height).setRoundPixels(true).centerOn(simulation.hero.x, simulation.hero.y - 18);
+      this.input.on('pointerup', (pointer: Phaser.Input.Pointer) => {
+        if (pointer.getDistance() > 12 || paused) return;
+        const p = this.cameras.main.getWorldPoint(pointer.x, pointer.y);
+        const enemy = simulation.actors.filter(a => a.kind !== 'hero' && a.hp > 0 && simulation.isVisible(a))
+          .find(a => Math.abs(a.x - p.x) < 14 && Math.abs(a.y - 12 - p.y) < 20);
+        const chest = simulation.chests.find(c => !c.opened && simulation.isVisible(c) && Math.hypot(c.x - p.x, c.y - p.y) < 18);
+        const result = simulation.command(enemy ? { kind: 'enemy', id: enemy.id } : chest ? { kind: 'chest', id: chest.id } : { kind: 'move', x: p.x, y: p.y });
+        parent.dispatchEvent(new CustomEvent('dungeon-command', { detail: result, bubbles: true }));
+        if (result.ok) persist();
+      });
       sceneInstance = this;
       ready = true;
       parent.dataset.ready = 'true';
@@ -101,7 +112,7 @@ export function createGame(parent: HTMLElement) {
       this.effects.forEach((effect) => effect.sprite.destroy());
       this.sparks.forEach((spark) => spark.sprite.destroy());
       this.effects = []; this.sparks = [];
-      accumulator = 0;
+      this.cameras.main.centerOn(simulation.hero.x, simulation.hero.y - 18);
       this.drawScene();
     }
 
@@ -147,7 +158,7 @@ export function createGame(parent: HTMLElement) {
       const texture = numberTexture(this, label, color);
       const x = actor.x + (actor.facing > 0 ? 5 : -5);
       const y = actor.y - (actor.kind === 'boss' ? 56 : actor.kind === 'hero' ? 29 : 27);
-      const sprite = this.add.image(x, y, texture).setDepth(600);
+      const sprite = this.add.image(x, y, texture).setDepth(6000);
       const numbers = this.effects.filter((effect) => effect.kind === 'number');
       if (numbers.length >= 8) { numbers[0].duration = 0; }
       this.effects.push({ sprite, start: simulation.elapsed, duration: 0.7, kind: 'number', x, y, scale: power ? 1.25 : 1 });
@@ -155,7 +166,7 @@ export function createGame(parent: HTMLElement) {
 
     private addEffect(kind: 'slash' | 'impact' | 'boss-impact', x: number, y: number, scale: number, angle: number) {
       const sprite = this.add.image(x, y, kind === 'boss-impact' ? 'boss-impact-0' : `combat-${kind === 'slash' ? 0 : 4}`)
-        .setDepth(350).setScale(scale).setRotation(kind === 'slash' ? angle - 0.2 : 0);
+        .setDepth(5500).setScale(scale).setRotation(kind === 'slash' ? angle - 0.2 : 0);
       this.effects.push({ sprite, start: simulation.elapsed, duration: kind === 'boss-impact' ? .32 : kind === 'slash' ? 0.24 : 0.2, kind, x, y, scale });
     }
 
@@ -165,12 +176,13 @@ export function createGame(parent: HTMLElement) {
         const dx = heal ? Math.sin(angle) * 5 : Math.cos(angle) * (5 + index);
         const dy = heal ? -12 - index : Math.sin(angle) * (5 + index) - 2;
         const sprite = this.add.rectangle(x, y, index % 2 ? 1 : 2, index % 2 ? 2 : 1, heal ? 0x9cfaa0 : index % 2 ? 0xffd16c : 0xff6805)
-          .setDepth(400);
+          .setDepth(5600);
         this.sparks.push({ sprite, start: simulation.elapsed, duration: heal ? 0.7 : 0.4, x, y, dx, dy });
       }
     }
 
     private combatEvent(event: CombatEvent) {
+      if (event.type === 'save') { persist(); return; }
       if (event.type === 'respawn') { this.resetVisuals(); return; }
       if (event.type === 'death') { this.addSparks(event.x, event.y - 8, false, 7); return; }
       const target = simulation.actors.find((actor) => actor.id === event.target);
@@ -179,7 +191,6 @@ export function createGame(parent: HTMLElement) {
         this.addNumber(target, event.amount, true, false);
         this.addSparks(target.x, target.y - 8, true, 8);
         this.actorView(target).sprite.setTint(0xa8ffbe);
-        target.flash = 0.15;
         return;
       }
       this.addNumber(target, event.amount, false, event.power);
@@ -194,7 +205,10 @@ export function createGame(parent: HTMLElement) {
     }
 
     private drawScene() {
-      this.environment?.setTexture(simulation.region === 'crypt' ? 'crypt' : 'dungeon');
+      const cam = this.cameras.main;
+      const targetX = simulation.hero.x - cam.width / 2, targetY = simulation.hero.y - cam.height / 2 - Math.min(18, cam.height * .08);
+      cam.setScroll(Math.round(cam.scrollX + (targetX - cam.scrollX) * .16), Math.round(cam.scrollY + (targetY - cam.scrollY) * .16));
+      this.worldView?.draw(simulation, reducedMotion.matches);
       const liveIds = new Set(simulation.actors.map((actor) => actor.id));
       for (const [id, view] of this.views) {
         if (!liveIds.has(id)) { view.sprite.destroy(); view.shadow.destroy(); view.bar.destroy(); this.views.delete(id); }
@@ -203,12 +217,14 @@ export function createGame(parent: HTMLElement) {
         const view = this.actorView(actor);
         const dead = actor.state === 'dead';
         const fade = actorOpacity(actor);
+        const visible = actor.kind === 'hero' || simulation.isVisible(actor);
+        view.sprite.setVisible(visible); view.shadow.setVisible(visible); view.bar.setVisible(visible);
         view.sprite.setTexture(actorTexture(actor)).setPosition(Math.round(actor.x), Math.round(actor.y))
           .setFlipX(actor.facing < 0).setDepth(actor.y).setAlpha(fade);
         if (actor.flash > 0 && actor.hp > 0) view.sprite.setTint(actor.flashKind === 'heal' ? 0xa8ffbe : 0xffc1b4);
         else view.sprite.clearTint();
         view.shadow.setPosition(Math.round(actor.x), Math.round(actor.y) - 1).setDepth(actor.y - 0.1).setAlpha(fade * 0.55);
-        view.bar.clear().setDepth(300);
+        view.bar.clear().setDepth(5000);
         if (actor.kind === 'skeleton' && !dead) {
           const x = Math.round(actor.x) - 9;
           const y = Math.round(actor.y) - 28;
@@ -240,19 +256,6 @@ export function createGame(parent: HTMLElement) {
         return true;
       });
 
-      this.glow?.clear();
-      const flicker = reducedMotion.matches ? 0.035 : 0.03 + Math.sin(now * 8) * 0.008 + Math.sin(now * 17) * 0.005;
-      for (const x of [20, 160]) {
-        for (let radius = 18; radius >= 5; radius -= 4) {
-          this.glow?.fillStyle(0xff861e, flicker).fillCircle(x, 48, radius);
-        }
-        // Tiny animated embers carry movement beyond the baked lighting in the environment.
-        for (let i = 0; i < 2; i++) {
-          const phase = (now * 0.7 + i * 0.5) % 1;
-          this.glow?.fillStyle(0xffd879, (1 - phase) * 0.75)
-            .fillRect(Math.round(x + Math.sin(now * 2 + i) * 2), Math.round(48 - phase * 10), 1, 1);
-        }
-      }
       this.respawn?.setText(simulation.respawnIn > 0 ? `Respawning: ${simulation.respawnIn.toFixed(1)}s` : '').setVisible(simulation.respawnIn > 0 && simulation.mode === 'farming');
     }
 
@@ -286,7 +289,7 @@ export function createGame(parent: HTMLElement) {
       // new layout first, otherwise closing Upgrades leaves a small canvas.
       game.scale.getParentBounds();
       game.scale.setGameSize(180, nativeHeight());
-      sceneInstance?.cameras.main.setSize(180, nativeHeight()).setScroll(0, (244 - nativeHeight()) / 2);
+      sceneInstance?.cameras.main.setSize(180, nativeHeight());
     }
   });
   observer.observe(parent);
@@ -307,8 +310,24 @@ export function createGame(parent: HTMLElement) {
     setFloor(id: number) { const result = simulation.setFloor(id); if (result.ok) { sceneInstance?.resetVisuals(); persist(); } return result; },
     startBoss() { const result = simulation.startBoss(); if (result.ok) { sceneInstance?.resetVisuals(); persist(); } return result; },
     leaveBoss() { simulation.leaveBoss(); sceneInstance?.resetVisuals(); persist(); },
+    auto() { simulation.auto(); persist(); },
+    command(order) { const result = simulation.command(order); if (result.ok) persist(); return result; },
+    visitRoom(id) {
+      const room = simulation.dungeon.rooms.find(r => r.id === id);
+      if (!room || !simulation.roomKnown(id)) return { ok: false, reason: 'Explore this room first.' };
+      const result = simulation.command({ kind: 'move', ...center(room) }); if (result.ok) persist(); return result;
+    },
+    setProgression(advance) { simulation.setProgression(advance); persist(); },
     getSnapshot() {
       return {
+        activity: simulation.activity, notice: simulation.notice, manualOrder: Boolean(simulation.order),
+        roomsCleared: simulation.roomsCleared, roomCount: simulation.combatRooms.length,
+        chestsOpened: simulation.chests.filter(c => c.opened).length, chestCount: simulation.chests.length,
+        advanceFloors: simulation.advanceFloors, unlockedFloor: simulation.unlockedFloor, completedRuns: simulation.completedRuns,
+        map: { width: simulation.dungeon.width, height: simulation.dungeon.height, tiles: simulation.dungeon.tiles,
+          explored: simulation.explored, hero: { x: simulation.hero.x, y: simulation.hero.y },
+          rooms: simulation.dungeon.rooms.map(r => ({ id: r.id, name: r.name, ...center(r), kind: r.kind,
+            known: simulation.roomKnown(r.id), cleared: !simulation.actors.some(a => a.kind !== 'hero' && a.room === r.id && a.hp > 0) })) },
         floor: simulation.floor, region: simulation.region, mode: simulation.mode, bossDefeated: simulation.bossDefeated,
         bossHp: simulation.actors.find(actor => actor.kind === 'boss')?.hp ?? 0, bossMaxHp: BOSS.hp,
         bossSeconds: simulation.bossSeconds, bossResult: simulation.bossResult, goldPerMinute: simulation.goldPerMinute,

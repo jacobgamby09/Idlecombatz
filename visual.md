@@ -1,5 +1,13 @@
 # IdleCombatz — visuel specifikation
 
+## Dungeon-pivot — 2026-09-14
+
+Den godkendte [pivot-plan](docs/dungeon-pivot-plan.md) erstatter den faste arena med et sammenhængende tile-baseret dungeon og et kamera, der følger helten. Reglerne nedenfor om fast rum/kamera og fravær af obstacle/pathfinding i afsnit 4.3 og 7.2 er historiske. Palette, Modern Pixel-identitet, spriteskala, VFX og kompakt mobilkomposition gælder fortsat.
+
+World-grid er 16 art-pixels. Genererede gulvpatches samples til 32 × 32 og fordeles over fire logiske felter. Vægge er sammenhængende blokke på grid'et; kister, trapper og fakler er selvstændige props. Kortet og den aktuelle synlighed afslører rum under udforskning. Kameraet afrundes til art-pixels og tilpasser det synlige udsnit ved åbning af upgrades, så figurerne bevarer deres skala.
+
+Auto/ordre-status ligger nederst i kampfladen, clear-status og et kompakt minimap øverst. Mindre paneler kan åbnes over dungeon; Upgrades har fortsat sin egen række. Første versions eksisterende front/skrå-walk-animationer bruges i alle bevægelsesretninger med sidevendt spejling. Nye op-/ned-clips er en mulig visuel udvidelse, hvis den nu afprøvede bevægelse skal få tydeligere retningsposes.
+
 **Status:** Bindende grundlag for den første implementation.  
 **Visuelt facit:** Brugerens billede, “B. Modern Pixel”.  
 **Mål:** Spillet skal ligne den viste spilskærm i komposition, pixelgrafik, materialer, farver, figurer, lys, effekter og UI. “Inspireret af” er ikke acceptkriteriet.

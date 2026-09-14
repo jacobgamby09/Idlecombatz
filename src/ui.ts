@@ -3,7 +3,7 @@ import type { Ability, SceneController, UpgradeId } from './game/types';
 import { UPGRADES, UPGRADE_IDS } from './game/progression';
 import { BOSS, FLOORS } from './game/world';
 
-type Panel = 'hero' | 'skills' | 'upgrades' | 'boss' | 'floors';
+type Panel = 'hero' | 'skills' | 'upgrades' | 'boss' | 'floors' | 'map';
 
 const iconOrder = [
   'portrait', 'power-strike', 'heal', 'hero',
@@ -51,9 +51,11 @@ export function mountUI(root: HTMLElement) {
           <button class="settings-button" type="button" data-action="scene" aria-label="Game settings">${icon('settings')}</button>
         </header>
 
-        <div class="arena-wrap"><div id="arena" role="img" aria-label="An armored knight fighting skeletons in a torchlit dungeon"></div>
+        <div class="arena-wrap"><div id="arena" role="group" aria-label="Dungeon. Tap a destination or use the Map room controls."></div>
+          <div class="exploration-hud"><span data-clear-progress>0/4 rooms · 0/2 chests</span><button type="button" data-panel="map" aria-label="Open dungeon map"><canvas class="mini-map" width="74" height="122" aria-hidden="true"></canvas><span>MAP</span></button></div>
+          <div class="auto-bar"><div><span data-activity>Exploring</span><small data-run-notice>Tap to guide · Your hero explores automatically</small></div><button type="button" data-action="auto" aria-pressed="true">AUTO</button></div>
           <div class="boss-health" hidden><img src="/assets/boss/portrait.png" alt=""/><div class="boss-health-copy"><div><strong>Goblin King</strong><span data-boss-time></span></div><div class="boss-meter" role="meter" aria-label="Goblin King health" aria-valuemin="0" aria-valuemax="1800"><div data-boss-fill></div><span data-boss-hp></span></div></div><button type="button" data-action="retreat" aria-label="Retreat from boss">×</button></div>
-          <div class="victory-card" role="status" hidden><span class="victory-eyebrow">BOSS DEFEATED</span><strong>The crown falls.</strong><p>Slot II unlocked · Power Strike + Heal<br/>A path to the Moss Crypt is open.</p><button type="button" data-floor-id="4">Enter Moss Crypt <span>→</span></button><button type="button" class="quiet-button" data-action="stay">Keep farming here</button></div>
+          <div class="victory-card" role="status" hidden><span class="victory-eyebrow">BOSS DEFEATED</span><strong>The crown falls.</strong><p>Power Strike + Heal · Moss Crypt unlocked.<br/>Your hero continues automatically.</p></div>
         </div>
 
         <section class="ability-dock" aria-label="Equipped abilities">
@@ -74,7 +76,7 @@ export function mountUI(root: HTMLElement) {
           <button type="button" data-panel="hero" aria-expanded="false">${icon('hero')}<span>Hero</span></button>
           <button type="button" data-panel="skills" aria-expanded="false">${icon('skills')}<span>Skills</span></button>
           <button type="button" data-panel="upgrades" aria-expanded="false">${icon('upgrades')}<span>Upgrades</span></button>
-          <button type="button" data-panel="boss" aria-expanded="false">${icon('boss')}<span>Boss</span></button>
+          <button type="button" data-panel="map" aria-expanded="false">${icon('floor')}<span>Dungeon</span></button>
         </nav>
 
         <section class="detail-panel" aria-label="Character details" hidden>
@@ -86,14 +88,14 @@ export function mountUI(root: HTMLElement) {
       </section>
 
       <div class="scene-utility" aria-label="Visual scene controls">
-        <span class="scene-label"><span class="scene-dot"></span> DUNGEON PROTOTYPE <span class="scene-version">03</span></span>
+        <span class="scene-label"><span class="scene-dot"></span> DUNGEON PROTOTYPE <span class="scene-version">04</span></span>
         <div class="scene-actions"><button type="button" data-action="pause">Pause</button><span aria-hidden="true">/</span><button type="button" data-action="scene">Settings</button><span aria-hidden="true">/</span><button type="button" data-action="reference">Reference</button></div>
       </div>
     </div>
 
     <dialog class="scene-dialog">
       <header class="detail-heading"><h2>Settings</h2><button type="button" data-action="close-dialog" aria-label="Close settings">×</button></header>
-      <div class="dialog-body"><p>Progress saves automatically in this browser. Away time earns no rewards. Returning starts a fresh encounter with your saved health and recovery time.</p>
+      <div class="dialog-body"><p>Your hero explores, fights and collects treasure automatically. Tap a destination to guide them; Auto resumes after your order. Progress and the current dungeon save in this browser. Away time earns no rewards.</p>
         <div class="utility-buttons"><button type="button" data-action="pause">Pause</button><button type="button" data-action="start-over">Start over</button><button type="button" data-action="reference">View reference</button></div>
         <div class="reset-confirm" role="group" aria-label="Confirm new game" hidden><p>Erase all gold and upgrades in this browser and start a new game?</p><div class="utility-buttons"><button type="button" data-action="confirm-reset">Erase progress & start over</button><button type="button" data-action="cancel-reset">Keep playing</button></div></div>
         <p class="subtle-note">Choose your farming floor beside the gold counter. Boss attempts start at full health; leaving or reloading an attempt counts as a defeat.</p>
@@ -125,7 +127,8 @@ export function mountUI(root: HTMLElement) {
     hero: () => `<div class="hero-inspection"><div class="hero-preview">${icon('portrait')}<span>Knight</span></div><dl class="hero-facts"><div><dt>Health</dt><dd data-panel-health>—</dd></div><div><dt>Attack</dt><dd data-stat="atk">—</dd></div><div><dt>Defense</dt><dd data-stat="def">—</dd></div><div><dt>Respawn</dt><dd data-stat="respawn">—</dd></div></dl></div>`,
     skills: () => `<div class="skills-list">${(['power-strike', 'heal'] as const).map((ability) => `<button class="skill-option ${selectedAbility === ability ? 'selected' : ''}" type="button" data-ability="${ability}" aria-pressed="${selectedAbility === ability}"><span class="small-icon-frame">${icon(ability)}</span><span class="skill-copy"><strong>${abilityNames[ability]}</strong><span>${ability === 'power-strike' ? 'A powerful, sweeping sword strike.' : 'Recover health with a restorative spell.'}</span></span><span class="equipped-marker">${selectedAbility === ability ? 'Equipped' : 'Equip'}</span></button>`).join('')}</div><p class="panel-footnote">Abilities cast automatically when useful.</p>`,
     upgrades: () => `<div class="upgrade-list">${UPGRADE_IDS.map(id => `<div class="upgrade-row" data-upgrade-row="${id}"><span class="upgrade-symbol">${icon(id === 'atk' ? 'power-strike' : id === 'hp' ? 'heal' : id === 'def' ? 'armor' : 'hero')}</span><div class="upgrade-copy"><div><strong>${UPGRADES[id].name}</strong><span class="upgrade-level"></span></div><span class="upgrade-effect"></span><small>${UPGRADES[id].description}</small></div><button type="button" data-upgrade="${id}"><span class="upgrade-price"></span><span class="buy-label">Buy</span></button></div>`).join('')}</div>`,
-    boss: () => `<div class="boss-inspection"><img src="/assets/boss/portrait.png" alt="Goblin King"/><div><h3>${BOSS.name}</h3><p>${BOSS.hp.toLocaleString('en')} HP · ${BOSS.seconds}s attempt</p><span class="boss-reward">Reward: Slot II + Moss Crypt</span></div></div><p class="boss-rules">Start at full health. Defeat the king in one attempt. Death, timeout or retreat returns you to farming; his health resets.</p><button type="button" class="primary-action" data-action="challenge">Challenge the king</button>`,
+    boss: () => `<div class="boss-inspection"><img src="/assets/boss/portrait.png" alt="Goblin King"/><div><h3>${BOSS.name}</h3><p>${BOSS.hp.toLocaleString('en')} HP · ${BOSS.seconds}s attempt</p><span class="boss-reward">Reward: Slot II + Moss Crypt</span></div></div><p class="boss-rules">The king waits at the end of Floor 3. Auto collects the remaining treasure before starting his encounter at full health. Death, timeout or reloading ends the attempt. Clear Floor 3 again to retry.</p>`,
+    map: () => `<div class="dungeon-map-panel"><canvas class="large-map" width="148" height="244" aria-label="Explored dungeon map"></canvas><div class="room-list">${Array.from({ length: 7 }, (_, id) => `<button type="button" data-room-id="${id}" disabled>Unexplored room</button>`).join('')}</div></div><p class="panel-footnote">Choose an explored room to guide your hero. Combat stays automatic.</p><button class="primary-action" type="button" data-panel="floors">Floor & farming settings</button>`,
     floors: () => `<div class="floor-list">${FLOORS.map(f => `<button type="button" data-floor-id="${f.id}"><span><strong>Floor ${f.id}</strong><small>${f.name}</small></span><span>${f.reward} G / kill <small data-floor-status="${f.id}"></small></span></button>`).join('')}</div><p class="panel-footnote">Current floor: <strong data-gold-rate>0</strong> gold/min · last 60s, including recovery. Higher floors hit harder.</p>`,
   };
 
@@ -139,8 +142,10 @@ export function mountUI(root: HTMLElement) {
       button.setAttribute('aria-expanded', String(active));
     });
     if (!panel) return;
-    detailPanel.querySelector('h2')!.textContent = { hero: 'Hero', skills: 'Skills', upgrades: 'Upgrades', boss: 'Boss', floors: 'Farming floors' }[panel];
+    detailPanel.querySelector('h2')!.textContent = { hero: 'Hero', skills: 'Skills', upgrades: 'Upgrades', boss: 'Boss', floors: 'Floors & farming', map: 'Dungeon map' }[panel];
     detailContent.innerHTML = panels[panel]();
+    if (panel === 'floors') detailContent.insertAdjacentHTML('afterbegin', `<div class="progression-choice"><button type="button" data-progression="advance">Continue forward</button><button type="button" data-progression="repeat">Repeat this floor</button></div>`);
+    if (panel === 'floors') detailContent.insertAdjacentHTML('beforeend', `<div class="floor-actions"><button type="button" data-panel="boss">About the Goblin King</button><button type="button" data-action="retreat">Retreat & recover</button></div>`);
     update();
   }
 
@@ -163,10 +168,34 @@ export function mountUI(root: HTMLElement) {
     toast.hidden = false;
     toastTimer = setTimeout(() => { toast.hidden = true; }, 3400);
   }
+  root.addEventListener('dungeon-command', event => {
+    const result = (event as CustomEvent<{ ok: boolean; reason?: string }>).detail;
+    if (!result.ok && result.reason) notify(result.reason);
+  }, { signal: events.signal });
 
   function update() {
     if (!controller) return;
     const state = controller.getSnapshot();
+    root.querySelector('[data-activity]')!.textContent = state.isPaused ? 'Paused' : state.activity;
+    root.querySelector('[data-run-notice]')!.textContent = state.notice || (state.manualOrder ? 'Your order is active · Auto resumes afterwards' : state.advanceFloors ? 'Auto descent · Tap anywhere to guide' : `Repeating Floor ${state.floor} · Tap to guide`);
+    root.querySelector('[data-clear-progress]')!.textContent = `${state.roomsCleared}/${state.roomCount} rooms · ${state.chestsOpened}/${state.chestCount} chests`;
+    const autoButton = root.querySelector<HTMLButtonElement>('[data-action="auto"]')!;
+    autoButton.textContent = state.manualOrder ? 'RESUME AUTO' : 'AUTO'; autoButton.setAttribute('aria-pressed', String(!state.manualOrder));
+    root.querySelectorAll<HTMLButtonElement>('[data-progression]').forEach(b => b.setAttribute('aria-pressed', String((b.dataset.progression === 'advance') === state.advanceFloors)));
+    root.querySelectorAll<HTMLButtonElement>('[data-room-id]').forEach(b => {
+      const r = state.map.rooms[Number(b.dataset.roomId)]; b.disabled = !r.known;
+      b.textContent = r.known ? `${r.cleared && (r.kind === 'combat' || r.kind === 'boss') ? '✓ ' : ''}${r.name}` : 'Unexplored room';
+    });
+    root.querySelectorAll<HTMLCanvasElement>('.mini-map, .large-map').forEach(canvas => {
+      const ctx = canvas.getContext('2d')!; const scale = canvas.width / state.map.width;
+      ctx.fillStyle = '#11101b'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+      state.map.tiles.forEach((tile, i) => {
+        if (!tile || !state.map.explored[i]) return;
+        ctx.fillStyle = state.region === 'crypt' ? '#536967' : '#645572'; ctx.fillRect(i % state.map.width * scale, Math.floor(i / state.map.width) * scale, scale, scale);
+      });
+      for (const r of state.map.rooms) if (r.known) { ctx.fillStyle = r.kind === 'exit' ? '#a6d8bc' : r.kind === 'treasure' ? '#c8a969' : r.kind === 'boss' ? '#cf7780' : r.cleared ? '#92908b' : '#a884ab'; ctx.fillRect(r.x / 16 * scale - scale, r.y / 16 * scale - scale, scale * 2, scale * 2); }
+      ctx.fillStyle = '#ffe2a3'; ctx.fillRect(state.map.hero.x / 16 * scale - scale, state.map.hero.y / 16 * scale - scale, scale * 2, scale * 2);
+    });
     root.querySelector('[data-floor]')!.textContent = state.mode === 'boss' ? 'Boss' : `Floor ${state.floor}`;
     const bossHealth = root.querySelector<HTMLElement>('.boss-health')!;
     bossHealth.hidden = state.mode !== 'boss';
@@ -196,11 +225,11 @@ export function mountUI(root: HTMLElement) {
     root.querySelector<HTMLElement>('.slot-number')!.textContent = state.bossDefeated ? state.secondaryCooldown > .05 ? state.secondaryCooldown.toFixed(1) : 'Ready' : 'II';
     root.querySelectorAll<HTMLButtonElement>('[data-floor-id]').forEach(button => {
       const id = Number(button.dataset.floorId);
-      const locked = id === 4 && !state.bossDefeated;
+      const locked = id > state.unlockedFloor;
       button.disabled = locked || state.mode === 'boss';
       button.classList.toggle('selected', id === state.floor);
       const status = button.querySelector('[data-floor-status]');
-      if (status) status.textContent = locked ? 'Defeat the king' : id === state.floor ? 'Farming here' : 'Travel';
+      if (status) status.textContent = locked ? id === 4 ? 'Defeat the king' : 'Clear previous floor' : id === state.floor ? 'Exploring here' : 'Travel';
     });
     const rate = root.querySelector('[data-gold-rate]');
     if (rate) rate.textContent = state.goldPerMinute.toFixed(1);
@@ -285,6 +314,8 @@ export function mountUI(root: HTMLElement) {
     const target = event.target as HTMLElement;
     const button = target.closest<HTMLButtonElement>('button');
     if (!button) return;
+    if (button.dataset.roomId !== undefined) { const result = controller?.visitRoom(Number(button.dataset.roomId)); if (result?.ok) openPanel(null); else if (result) notify(result.reason); return; }
+    if (button.dataset.progression) { controller?.setProgression(button.dataset.progression === 'advance'); update(); return; }
     if (button.dataset.floorId) {
       const result = controller?.setFloor(Number(button.dataset.floorId));
       if (result?.ok) openPanel(null); else if (result) notify(result.reason);
@@ -311,6 +342,7 @@ export function mountUI(root: HTMLElement) {
       return;
     }
     switch (button.dataset.action) {
+      case 'auto': controller?.auto(); update(); break;
       case 'close-panel': openPanel(null); break;
       case 'locked-slot': if (controller?.getSnapshot().bossDefeated) openPanel('skills'); else notify('Slot II unlocks after your first boss victory.'); break;
       case 'challenge': {

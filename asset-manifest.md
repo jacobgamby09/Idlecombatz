@@ -202,3 +202,23 @@ Faktiske genereringsprompts: [characters](art-prompts/characters.md), [environme
 | src/styles.css | Varm victory-card og slot-unlock-accent; reduced-motion understøttet | Integreret UI-feedback |
 
 Bossens attack-klip varer 860 ms og rammer ved 520 ms, ved frame 16. Hurt er 2×40 ms og afbryder aldrig en igangværende attack-animation eller simulation. Normale death-clips varer 4×140 ms, derefter 190 ms fade; boss-death er 6×160 ms med efterfølgende fade. Reward-kortet venter til sammenfaldet er afspillet. Kilder og faktiske prompts: [boss-region.md](art-prompts/boss-region.md). QA og kendte begrænsninger: [boss-qa.md](docs/boss-qa.md).
+
+## Dungeon-pivot — integreret miljøsæt, 2026-09-14
+
+Det tidligere samlede dungeon-billede bruges nu som art-reference. Gameplayets miljø bliver sammensat af et grid og det nye atlas. Den oprindelige kilde indlæses fortsat af den fælles tekstur-loader, men vises ikke som arenaens baggrund.
+
+| Asset | Faktisk kilde / runtime | Status |
+|---|---|---|
+| Modulært dungeon-/kryptatlas | `environment/dungeon-atlas-alpha.png`, 1254 × 1254 RGB; fire kolonner og fire rækker | Integreret; kilde-matte normaliseres ved indlæsning |
+| Dungeon-gulv | Celler 0–3; patches 32 × 32, fordelt over 16 × 16 logiske felter | 0–2 anvendes, 3 er reserve |
+| Kryptgulv | Celler 4–7 med kold sten og mos | 4–6 anvendes, 7 er reserve |
+| Vægge | Celler 8–11, runtime 16 × 16; dungeon-front/top og krypt-front/top | Integreret rundt om rum og passager |
+| Kiste | Celler 12/13, lukket og åben; runtime 32 × 32, origin 0.5/0.8 | Integreret; skifter ved simulationens faktiske loot |
+| Trappe | Celle 14, runtime 32 × 32; markeres varm ved clear | Integreret; indgangsvariant roteres og dæmpes |
+| Fakkel | Celle 15; runtime-frame 32 × 32, world-visning 12 × 24 med separat varm flakken | Integreret; ingen særskilt flamme-frameanimation |
+| Kort/fog/målmarkør | Runtime-visning af den aktuelle simulation; ingen genererede kortbilleder | Integreret |
+| Kildemetadata | `environment/dungeon-loading.json` | Faktiske dimensioner og crops registreret |
+
+Alle nye bitmap-assets bruger indbygget ImageGen. [Prompts, matte og provenance](art-prompts/dungeon-pivot.md). Første kilde `environment/dungeon-atlas.png` og alpha-forsøget er begge bevaret. Bogstaverne “alpha” i det sidstnævnte filnavn beskriver redigeringsforsøget; PNG-kilden har ikke ægte alfa. Prop-rækkens neutrale baggrund fjernes i `src/game/dungeon/render.ts`.
+
+Dungeon-pivotets status og kendte afgrænsninger står i [dungeon-QA](docs/dungeon-qa.md). Historiske afsnit ovenfor, der beskriver fire tests, manglende upgrades eller fravær af boss/saves, er ikke aktuel produktstatus.

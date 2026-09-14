@@ -319,3 +319,32 @@ button.floor-value { color: #bcb4c4; font-family: inherit; cursor: pointer; padd
 @keyframes unlock-glow { from { filter: brightness(2.3); box-shadow: 0 0 28px #ffb850aa; } to { filter: brightness(1); } }
 @keyframes victory-enter { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 @media (prefers-reduced-motion: reduce) { .victory-card, .slot-unlocked { animation: none; } }
+
+/* Dungeon exploration controls share the existing compact frame and palette. */
+#arena { touch-action: none; }
+.exploration-hud { position: absolute; inset: 8px 8px auto; z-index: 2; pointer-events: none; display: flex; justify-content: space-between; align-items: flex-start; }
+.exploration-hud > span { font-size: 10px; color: #c8b8d0; background: #14101ddd; border: 1px solid #493b53; padding: 7px 8px; border-radius: 4px; }
+.exploration-hud > button { pointer-events: auto; padding: 4px; border: 1px solid #5b4963; background: #16121edd; border-radius: 4px; min-width: 48px; }
+.mini-map { display: block; width: 48px; height: 79px; image-rendering: pixelated; }
+.exploration-hud button > span { display: block; margin-top: 3px; font-size: 8px; letter-spacing: 1px; color: #b8a9c1; }
+.auto-bar { position: absolute; z-index: 2; bottom: 7px; left: 8px; right: 8px; display: flex; align-items: center; justify-content: space-between; gap: 6px; padding: 4px 5px 4px 9px; border: 1px solid #4d3c59; border-radius: 5px; background: #17121ff0; }
+.auto-bar > div { min-width: 0; }
+.auto-bar [data-activity] { display: block; font-size: 11px; color: #e5d2b4; }
+.auto-bar small { display: block; margin-top: 4px; font-size: 8px; color: #9989a5; line-height: 1.4; }
+.auto-bar button { min-width: 56px; min-height: 44px; max-width: 82px; flex-shrink: 0; border: 1px solid #766847; border-radius: 4px; background: #373126; color: #e0c991; font-size: 9px; font-weight: 700; }
+.auto-bar button[aria-pressed="false"] { background: #49322c; border-color: #b18c51; }
+.boss-health { top: 43px; right: 72px; }
+.boss-health > button { width: 44px; height: 44px; flex-shrink: 0; }
+.victory-card { bottom: 76px; pointer-events: none; }
+.progression-choice { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 12px; }
+.progression-choice button, .floor-actions button { min-height: 44px; border: 1px solid #514159; background: #211a2c; border-radius: 4px; font-size: 10px; padding: 6px; }
+.progression-choice button[aria-pressed="true"] { border-color: #b08b55; background: #3b2c2e; color: #efd4a0; }
+.floor-actions { display: flex; gap: 6px; margin-top: 10px; }
+.floor-actions button { flex: 1; }
+.dungeon-map-panel { display: flex; align-items: flex-start; gap: 12px; }
+.large-map { display: block; width: 90px; height: 148px; image-rendering: pixelated; background: #11101b; border: 1px solid #4d3c59; flex-shrink: 0; }
+.room-list { display: grid; gap: 4px; flex: 1; }
+.room-list button { min-height: 44px; border: 1px solid #514159; background: #251d30; border-radius: 3px; font-size: 10px; text-align: left; padding: 5px 8px; }
+.room-list button:disabled { color: #75697e; border-color: #322939; background: #18141f; }
+.dungeon-map-panel + p { margin-bottom: 10px; }
+@media (max-height: 699px) { .mini-map { width: 37px; height: 61px; } .auto-bar small { max-width: 210px; } }

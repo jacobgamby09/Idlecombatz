@@ -17,7 +17,7 @@ test('Save roundtrip retains progression, injured HP, both cooldowns, and abilit
   assert.deepEqual(restored.exportSave(), original);
   assert.equal(restored.hero.maxHp, 256);
   assert.equal(restored.elapsed, 0);
-  assert.equal(restored.actors.length, 6);
+  assert.equal(restored.actors.length, sim.actors.length);
 });
 
 test('Reload during death retains countdown with no offline advancement', () => {

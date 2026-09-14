@@ -43,6 +43,7 @@ test('Prices and stat progression remain finite and capped recovery stops at two
 test('An attack in flight retains its damage; the next attack uses the purchased ATK', () => {
   const sim = new CombatSimulation(); sim.gold = 100; sim.setAbility('heal');
   sim.actors[1].x = sim.hero.x + 22.9; sim.actors[1].y = sim.hero.y;
+  sim.actors[1].homeX = sim.actors[1].x; sim.actors[1].homeY = sim.actors[1].y;
   sim.actors[1].hp = sim.actors[1].maxHp = 1000;
   sim.hero.attackWait = 0; sim.step(1 / 60); sim.drainEvents();
   assert.equal(sim.hero.state, 'attack');
@@ -68,7 +69,7 @@ test('HP purchases do not heal, while subsequent Heal and respawn use the upgrad
 
 test('Defense reduces actual incoming hits using the displayed formula', () => {
   const sim = new CombatSimulation(); sim.gold = 100; sim.buyUpgrade('def');
-  const enemy = sim.actors[1]; enemy.x = sim.hero.x + 22.9; enemy.y = sim.hero.y; enemy.attackWait = 0;
+  const enemy = sim.actors[1]; enemy.x = sim.hero.x + 22.9; enemy.y = sim.hero.y; enemy.attackWait = 0; enemy.homeX = enemy.x; enemy.homeY = enemy.y;
   const hit = advance(sim, .2).find(e => e.type === 'hit' && e.source === enemy.id);
   assert.equal(hit.amount, DEMO.enemyAtk * 100 / (100 + sim.stats.def));
   assert.deepEqual(heroStats(freshLevels()), { atk: 24, maxHp: 224, def: 12, respawn: 5 });
@@ -77,7 +78,7 @@ test('Defense reduces actual incoming hits using the displayed formula', () => {
 test('A new death uses upgraded recovery; reset clears progression', () => {
   const sim = new CombatSimulation(); sim.gold = 100; sim.buyUpgrade('respawn');
   sim.hero.hp = 1;
-  const enemy = sim.actors[1]; enemy.x = sim.hero.x + 22.9; enemy.y = sim.hero.y; enemy.attackWait = 0;
+  const enemy = sim.actors[1]; enemy.x = sim.hero.x + 22.9; enemy.y = sim.hero.y; enemy.attackWait = 0; enemy.homeX = enemy.x; enemy.homeY = enemy.y;
   for (let i = 0; i < 30 && sim.hero.hp > 0; i++) { sim.step(1 / 60); sim.drainEvents(); }
   assert.equal(sim.respawnIn, 4.8);
   sim.reset();

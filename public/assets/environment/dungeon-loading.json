@@ -1,0 +1,171 @@
+{
+  "source": "dungeon-atlas-alpha.png",
+  "width": 1254,
+  "height": 1254,
+  "pngColorType": 2,
+  "generatedWith": "built-in ImageGen",
+  "reference": "environment/dungeon.png",
+  "matte": "Opaque neutral checkerboard on prop row, removed at load time where min(R,G,B)>145 and max-min<24. Filename records the alpha edit attempt, not a claim of source transparency.",
+  "frames": [
+    {
+      "id": 0,
+      "sourceRect": {
+        "x": 3,
+        "y": 3,
+        "width": 308,
+        "height": 308
+      },
+      "runtimeSize": 32
+    },
+    {
+      "id": 1,
+      "sourceRect": {
+        "x": 317,
+        "y": 3,
+        "width": 307,
+        "height": 308
+      },
+      "runtimeSize": 32
+    },
+    {
+      "id": 2,
+      "sourceRect": {
+        "x": 630,
+        "y": 3,
+        "width": 308,
+        "height": 308
+      },
+      "runtimeSize": 32
+    },
+    {
+      "id": 3,
+      "sourceRect": {
+        "x": 944,
+        "y": 3,
+        "width": 307,
+        "height": 308
+      },
+      "runtimeSize": 32
+    },
+    {
+      "id": 4,
+      "sourceRect": {
+        "x": 3,
+        "y": 317,
+        "width": 308,
+        "height": 307
+      },
+      "runtimeSize": 32
+    },
+    {
+      "id": 5,
+      "sourceRect": {
+        "x": 317,
+        "y": 317,
+        "width": 307,
+        "height": 307
+      },
+      "runtimeSize": 32
+    },
+    {
+      "id": 6,
+      "sourceRect": {
+        "x": 630,
+        "y": 317,
+        "width": 308,
+        "height": 307
+      },
+      "runtimeSize": 32
+    },
+    {
+      "id": 7,
+      "sourceRect": {
+        "x": 944,
+        "y": 317,
+        "width": 307,
+        "height": 307
+      },
+      "runtimeSize": 32
+    },
+    {
+      "id": 8,
+      "sourceRect": {
+        "x": 3,
+        "y": 630,
+        "width": 308,
+        "height": 308
+      },
+      "runtimeSize": 16
+    },
+    {
+      "id": 9,
+      "sourceRect": {
+        "x": 317,
+        "y": 630,
+        "width": 307,
+        "height": 308
+      },
+      "runtimeSize": 16
+    },
+    {
+      "id": 10,
+      "sourceRect": {
+        "x": 630,
+        "y": 630,
+        "width": 308,
+        "height": 308
+      },
+      "runtimeSize": 16
+    },
+    {
+      "id": 11,
+      "sourceRect": {
+        "x": 944,
+        "y": 630,
+        "width": 307,
+        "height": 308
+      },
+      "runtimeSize": 16
+    },
+    {
+      "id": 12,
+      "sourceRect": {
+        "x": 3,
+        "y": 944,
+        "width": 308,
+        "height": 307
+      },
+      "runtimeSize": 32
+    },
+    {
+      "id": 13,
+      "sourceRect": {
+        "x": 317,
+        "y": 944,
+        "width": 307,
+        "height": 307
+      },
+      "runtimeSize": 32
+    },
+    {
+      "id": 14,
+      "sourceRect": {
+        "x": 630,
+        "y": 944,
+        "width": 308,
+        "height": 307
+      },
+      "runtimeSize": 32
+    },
+    {
+      "id": 15,
+      "sourceRect": {
+        "x": 944,
+        "y": 944,
+        "width": 307,
+        "height": 307
+      },
+      "runtimeSize": 32
+    }
+  ]
+}
