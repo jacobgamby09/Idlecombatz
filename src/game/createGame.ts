@@ -7,7 +7,7 @@ import { BOSS } from './world';
 import { actorTexture, actorOpacity } from './animation';
 import { SaveStore } from './save';
 import { buildTileTextures, DungeonView, center } from './dungeon/render';
-import { buildCharacterTextures, buildDungeonTexture, buildEffectTextures, buildExpansionTextures, numberTexture } from './textures';
+import { buildCharacterTextures, buildContactShadow, buildEffectTextures, buildExpansionTextures, numberTexture } from './textures';
 
 interface ActorView {
   sprite: Phaser.GameObjects.Image;
@@ -61,7 +61,6 @@ export function createGame(parent: HTMLElement) {
         parent.dataset.loadError = file.key;
         console.error(`Unable to load game asset: ${file.key}`);
       });
-      this.load.image('dungeon-source', '/assets/environment/dungeon.png');
       this.load.image('atlas-source', '/assets/environment/dungeon-atlas-alpha.png');
       this.load.image('hero-source', '/assets/characters/hero-sheet.png');
       this.load.image('skeleton-source', '/assets/characters/skeleton-sheet.png');
@@ -71,12 +70,11 @@ export function createGame(parent: HTMLElement) {
       this.load.image('hero-extra-source', '/assets/characters/extensions/hero-hurt-death.png');
       this.load.image('skeleton-extra-source', '/assets/characters/extensions/skeleton-hurt-death.png');
       this.load.image('boss-impact-source', '/assets/boss/impact.png');
-      this.load.image('crypt-source', '/assets/environment/moss-crypt.png');
       this.load.json('expansion-loading', '/assets/boss/loading.json');
     }
 
     create() {
-      buildDungeonTexture(this);
+      buildContactShadow(this);
       buildCharacterTextures(this);
       buildEffectTextures(this);
       buildExpansionTextures(this);

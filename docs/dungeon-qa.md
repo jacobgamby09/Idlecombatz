@@ -25,6 +25,7 @@ Dato: 2026-09-14. Version: 0.2.0. Spilflow: load/save → automatisk udforskning
 | Væghjørner | En diagonal vægkontakt blokerer både syn og melee-hit; alle 80 floor-gentagelser passerer med denne regel |
 | Normal reload | Genindlæsning af Floor 4 beholdt gold, unlock, run-ID, udforskning og skadet hero; ingen save-fejl |
 | Production-save | Ægte v2-migration i browseren bevarede stats/gold og tog backup; et efterfølgende UI-køb af ATK overlevede normal reload. Ingen DEV-hook i production |
+| UI-input og reduced motion | Kortordre vises som midlertidig ordre; Auto annullerer den. Klik på kort/Upgrades giver ingen world-pointer-events. Reduced motion afprøvet ved 360 × 640 |
 | Browser-/assetfejl | Ingen rapporterede runtime-fejl eller manglende assets i den gennemførte kontrol |
 | Byg | TypeScript og Vite production-build passerer; Vites eksisterende advarsel om Phaser-bundlestørrelse består |
 | Uafbrudt production-browserprøve | I gang; slutresultat tilføjes før leverancen afsluttes |
@@ -35,6 +36,8 @@ Dato: 2026-09-14. Version: 0.2.0. Spilflow: load/save → automatisk udforskning
 Snapshots kontrolleres på 360 × 640, 360 × 796, 390 × 844 og desktop. Både normalt dungeon, boss, krypt, kort og upgrades indgår. Upgrades ændrer nu det synlige world-udsnit i stedet for at nedskalere hele scenen; figurerne beholder derfor samme størrelse. Kamera, sprite/VFX-depth, fog og prop-matte er kontrolleret i gameplay.
 
 Screenshots findes i `artifacts/dungeon-*.png`. `artifacts/dungeon-motion.webm` indeholder 34 sekunders faktisk canvas-gameplay fra production-browserprøven, uden HTML-UI. Browseren dekoder filen til 180 × 252 med readyState 4. Ingen pixelbilleder er erstattet med SVG-tegninger. Alpha-forsøgets kilde er RGB; den dokumenterede runtime-loader fjerner prop-matten. Originale kilder er bevaret.
+
+En kort måling i synlig desktop-browser på Vercel-preview viste median 16,7 ms, p95 17,0 ms og maksimum 17,2 ms over 180 animation frames. Dette er en stikprøve på testmaskinen. De to gamle arenabaggrunde på tilsammen 3.161.329 bytes indlæses ikke længere; assets og historiske referencer bevares i projektet.
 
 ## Balance
 

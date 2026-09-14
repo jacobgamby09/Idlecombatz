@@ -29,13 +29,7 @@ export function buildCharacterTextures(scene: Phaser.Scene) {
   }
 }
 
-export function buildDungeonTexture(scene: Phaser.Scene) {
-  const image = scene.textures.get('dungeon-source').getSourceImage() as HTMLImageElement;
-  const texture = scene.textures.createCanvas('dungeon', 180, 244)!;
-  const context = texture.getContext();
-  context.imageSmoothingEnabled = false;
-  context.drawImage(image, 0, 0, 180, 244);
-  texture.refresh();
+export function buildContactShadow(scene: Phaser.Scene) {
   const shadow = scene.textures.createCanvas('contact-shadow', 18, 6)!;
   const shadowContext = shadow.getContext();
   shadowContext.fillStyle = '#090914';
@@ -92,10 +86,6 @@ export function buildExpansionTextures(scene: Phaser.Scene) {
       texture.refresh();
     }
   }
-  const crypt = scene.textures.createCanvas('crypt', 180, 244)!;
-  crypt.getContext().imageSmoothingEnabled = false;
-  crypt.getContext().drawImage(scene.textures.get('crypt-source').getSourceImage() as HTMLImageElement, 0, 0, 180, 244);
-  crypt.refresh();
 }
 
 const digits: Record<string, string[]> = {
