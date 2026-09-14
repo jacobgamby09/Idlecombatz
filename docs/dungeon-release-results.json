@@ -1,0 +1,168 @@
+{
+  "bossEncounterObserved": true,
+  "build": "Seeded valid v3 save with ATK/HP/DEF 12, Floor 1, 5000 gold; no commands or time acceleration after start",
+  "buildNote": "Subsequent ed4aee7 only removes unused background loads and updates evidence; its browser asset load is separately verified.",
+  "commit": "300f953b71e553d12cd6346be0d5fe071e2da48c",
+  "cryptClearObserved": true,
+  "environment": "Visible headless Chromium on Windows, 360x796 portrait viewport; deployed Vercel production build",
+  "errors": [],
+  "finishedAt": "2026-09-14T08:22:24.342Z",
+  "floors": [
+    1,
+    2,
+    3,
+    4
+  ],
+  "goldMonotonic": true,
+  "last": {
+    "bossDefeated": true,
+    "elapsed": 377.9333333333183,
+    "floor": 4,
+    "gold": 5305,
+    "hp": 589.0423076923059,
+    "mode": "farming",
+    "runId": 5,
+    "runs": 5,
+    "time": 1789374143803
+  },
+  "sampleCount": 363,
+  "sampleIntervalSeconds": 1,
+  "startedAt": "2026-09-14T08:16:20.797Z",
+  "transitions": [
+    {
+      "bossDefeated": false,
+      "elapsed": 15.933333333333705,
+      "floor": 1,
+      "gold": 5006,
+      "hp": 590.6923076923078,
+      "mode": "farming",
+      "runId": 1,
+      "runs": 0,
+      "time": 1789373781810
+    },
+    {
+      "bossDefeated": false,
+      "elapsed": 58.53333333333129,
+      "floor": 1,
+      "gold": 5015,
+      "hp": 573.3846153846157,
+      "mode": "farming",
+      "runId": 1,
+      "runs": 1,
+      "time": 1789373823799
+    },
+    {
+      "bossDefeated": false,
+      "elapsed": 60.54999999999784,
+      "floor": 2,
+      "gold": 5015,
+      "hp": 573.3846153846157,
+      "mode": "farming",
+      "runId": 2,
+      "runs": 1,
+      "time": 1789373825798
+    },
+    {
+      "bossDefeated": false,
+      "elapsed": 126.18333333332744,
+      "floor": 2,
+      "gold": 5045,
+      "hp": 490.30769230769215,
+      "mode": "farming",
+      "runId": 2,
+      "runs": 2,
+      "time": 1789373891808
+    },
+    {
+      "bossDefeated": false,
+      "elapsed": 128.19999999999416,
+      "floor": 3,
+      "gold": 5045,
+      "hp": 490.30769230769215,
+      "mode": "farming",
+      "runId": 3,
+      "runs": 2,
+      "time": 1789373893813
+    },
+    {
+      "bossDefeated": false,
+      "elapsed": 187.31666666670787,
+      "floor": 3,
+      "gold": 5089,
+      "hp": 608,
+      "mode": "boss",
+      "runId": 3,
+      "runs": 2,
+      "time": 1789373952803
+    },
+    {
+      "bossDefeated": true,
+      "elapsed": 207.26666666672375,
+      "floor": 3,
+      "gold": 5121,
+      "hp": 413.2884615384618,
+      "mode": "victory",
+      "runId": 3,
+      "runs": 2,
+      "time": 1789373972800
+    },
+    {
+      "bossDefeated": true,
+      "elapsed": 210.91666666672663,
+      "floor": 3,
+      "gold": 5121,
+      "hp": 534.8884615384618,
+      "mode": "farming",
+      "runId": 3,
+      "runs": 2,
+      "time": 1789373976802
+    },
+    {
+      "bossDefeated": true,
+      "elapsed": 213.1166666667284,
+      "floor": 3,
+      "gold": 5125,
+      "hp": 534.8884615384618,
+      "mode": "farming",
+      "runId": 3,
+      "runs": 3,
+      "time": 1789373978799
+    },
+    {
+      "bossDefeated": true,
+      "elapsed": 215.13333333339668,
+      "floor": 4,
+      "gold": 5125,
+      "hp": 534.8884615384618,
+      "mode": "farming",
+      "runId": 4,
+      "runs": 3,
+      "time": 1789373980801
+    },
+    {
+      "bossDefeated": true,
+      "elapsed": 296.166666666726,
+      "floor": 4,
+      "gold": 5215,
+      "hp": 501.1653846153839,
+      "mode": "farming",
+      "runId": 4,
+      "runs": 4,
+      "time": 1789374061802
+    },
+    {
+      "bossDefeated": true,
+      "elapsed": 377.04999999998574,
+      "floor": 4,
+      "gold": 5305,
+      "hp": 589.0423076923059,
+      "mode": "farming",
+      "runId": 5,
+      "runs": 5,
+      "time": 1789374142798
+    }
+  ],
+  "url": "https://idlecombatz-8x756scwa-jacobgamby09s-projects.vercel.app",
+  "victoryObserved": true,
+  "wallMinutes": 6.059083333333334
+}

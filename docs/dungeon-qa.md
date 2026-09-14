@@ -20,16 +20,19 @@ Dato: 2026-09-14. Version: 0.2.0. Spilflow: load/save → automatisk udforskning
 | Opdaterede tests | 38 tests passerer; combat, upgrades, navigation, fog, loot, boss, migration og storage-fejl |
 | Lang simulationsprøve | 20 gennemførte gentagelser pr. floor, ingen rute-recovery; reward-ledger kontrolleret pr. tick og save-validering hvert sekund |
 | Samlet browserforløb | 16 checks passerer i `scripts/check-dungeon-flow.js`, herunder køb, rumordre, Auto-genoptagelse, clear, repeat, retreat, bosssejr og krypt |
+| Deployed Auto-forløb | Over seks minutter i normal hastighed med ATK/HP/DEF 12: Floor 1 → 2 → 3 → boss → krypt, fem clears i alt og ingen fejl. [Transitionsdata](dungeon-release-results.json) |
 | Faktisk pointer-input | Browser-museklik i bossrummet gav en gyldig move-ordre gennem kameraets koordinatkonvertering |
 | Gentagne afbrydelser | Spillerordrer på tværs af fire floors og tre spawn-seeds genoptager Auto uden rute-recovery |
 | Væghjørner | En diagonal vægkontakt blokerer både syn og melee-hit; alle 80 floor-gentagelser passerer med denne regel |
 | Normal reload | Genindlæsning af Floor 4 beholdt gold, unlock, run-ID, udforskning og skadet hero; ingen save-fejl |
 | Production-save | Ægte v2-migration i browseren bevarede stats/gold og tog backup; et efterfølgende UI-køb af ATK overlevede normal reload. Ingen DEV-hook i production |
-| UI-input og reduced motion | Kortordre vises som midlertidig ordre; Auto annullerer den. Klik på kort/Upgrades giver ingen world-pointer-events. Reduced motion afprøvet ved 360 × 640 |
+| UI-input og reduced motion | Kortordre vises som midlertidig ordre; Auto annullerer den. Enter åbner kortet og aktiverer en fokuseret rumknap i preview. Klik på kort/Upgrades giver ingen world-pointer-events. Reduced motion afprøvet ved 360 × 640 |
 | Browser-/assetfejl | Ingen rapporterede runtime-fejl eller manglende assets i den gennemførte kontrol |
 | Byg | TypeScript og Vite production-build passerer; Vites eksisterende advarsel om Phaser-bundlestørrelse består |
-| Uafbrudt production-browserprøve | I gang; slutresultat tilføjes før leverancen afsluttes |
+| Uafbrudt production-browserprøve | 30,22 minutter, 181 samples, 17 clears og 411 gold med startbuild; alle samples havde `document.hidden === false`, ingen browserfejl. [Målinger](dungeon-soak-results.json) |
 | Udgivelse | Afventer afsluttende kontrol |
+
+Den lange prøve kørte i én uafbrudt Chromium-session på et lokalt production-build fra før de sidste rettelser af væghjørners syn, restore-synsfelt, viewport og fjernelse af gamle baggrunde. Den blev ikke genstartet under arbejdet. Den endelige kamp-/navigationskode er efterfølgende dækket af alle 38 tests, 80 floor-gentagelser og det særskilte seks-minutters Auto-forløb på Vercel. Heap-målingen inkluderer videooptagelse og QA-data og er ikke en fuld analyse af memory leaks.
 
 ## Visuel kontrol
 

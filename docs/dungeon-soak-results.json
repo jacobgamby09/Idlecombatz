@@ -1,0 +1,106 @@
+{
+  "allSamplesVisible": true,
+  "build": "New hero, zero upgrade levels, Power Strike, default automatic progression and fallback",
+  "buildNote": "Pre-release browser instance started before the final corner-visibility, restore-FOV, viewport and unused-background refinements. Those refinements have separate automated and deployed-browser coverage.",
+  "checkpoints": [
+    {
+      "elapsed": 38.76666666666575,
+      "floor": 1,
+      "gold": 8,
+      "heap": 15921257,
+      "hidden": false,
+      "runs": 0,
+      "time": 1789372537287
+    },
+    {
+      "elapsed": 338.0500000000212,
+      "floor": 1,
+      "gold": 72,
+      "heap": 18094718,
+      "hidden": false,
+      "runs": 2,
+      "time": 1789372837296
+    },
+    {
+      "elapsed": 638.0499999997484,
+      "floor": 1,
+      "gold": 138,
+      "heap": 23047642,
+      "hidden": false,
+      "runs": 5,
+      "time": 1789373137291
+    },
+    {
+      "elapsed": 938.0666666661422,
+      "floor": 1,
+      "gold": 205,
+      "heap": 31990465,
+      "hidden": false,
+      "runs": 8,
+      "time": 1789373437287
+    },
+    {
+      "elapsed": 1238.0666666658694,
+      "floor": 1,
+      "gold": 273,
+      "heap": 28163614,
+      "hidden": false,
+      "runs": 11,
+      "time": 1789373737292
+    },
+    {
+      "elapsed": 1538.1833333322631,
+      "floor": 1,
+      "gold": 340,
+      "heap": 25413647,
+      "hidden": false,
+      "runs": 14,
+      "time": 1789374037284
+    },
+    {
+      "elapsed": 1838.049999998657,
+      "floor": 1,
+      "gold": 411,
+      "heap": 44676812,
+      "hidden": false,
+      "runs": 17,
+      "time": 1789374337291
+    }
+  ],
+  "elapsedMonotonic": true,
+  "environment": "Visible headless Chromium on Windows, 390x844 portrait viewport; local Vite production preview",
+  "errors": [],
+  "finishedAt": "2026-09-14T08:25:40.414Z",
+  "first": {
+    "elapsed": 38.76666666666575,
+    "floor": 1,
+    "gold": 8,
+    "heap": 15921257,
+    "hidden": false,
+    "runs": 0,
+    "time": 1789372537287
+  },
+  "goldMonotonic": true,
+  "heapBytes": {
+    "last": 44676812,
+    "max": 47386027,
+    "min": 15921257
+  },
+  "heapNote": "Includes temporary canvas video recording and QA bookkeeping; not a formal memory-leak profile.",
+  "last": {
+    "elapsed": 1838.049999998657,
+    "floor": 1,
+    "gold": 411,
+    "heap": 44676812,
+    "hidden": false,
+    "runs": 17,
+    "time": 1789374337291
+  },
+  "runsMonotonic": true,
+  "sampleCount": 181,
+  "sampleIntervalSeconds": 10,
+  "script": "http://127.0.0.1:4173/assets/index-CB0MHY90.js",
+  "simulatedSecondsBetweenSamples": 1799.2833333319911,
+  "startedAt": "2026-09-14T07:55:27.284Z",
+  "wallMinutes": 30.218833333333333
+}
