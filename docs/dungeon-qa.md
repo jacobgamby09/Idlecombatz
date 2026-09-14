@@ -30,7 +30,7 @@ Dato: 2026-09-14. Version: 0.2.0. Spilflow: load/save → automatisk udforskning
 | Browser-/assetfejl | Ingen rapporterede runtime-fejl eller manglende assets i den gennemførte kontrol |
 | Byg | TypeScript og Vite production-build passerer; Vites eksisterende advarsel om Phaser-bundlestørrelse består |
 | Uafbrudt production-browserprøve | 30,22 minutter, 181 samples, 17 clears og 411 gold med startbuild; alle samples havde `document.hidden === false`, ingen browserfejl. [Målinger](dungeon-soak-results.json) |
-| Udgivelse | Afventer afsluttende kontrol |
+| Udgivelse | [Production](https://idlecombatz.vercel.app) verificeret efter Vercel `READY` for commit `96932fc`, deployment `dpl_48cV8aNySafpfqLWpnxXFBQtAU8a`. JavaScript `index-CP7iHnUJ.js`, save v3, kort og Auto indlæses uden browser-/asset-/save-fejl eller vandret overflow ved 390 × 844. Dokumentationscommit efter denne kontrol ændrer ikke spilbuildet |
 
 Den lange prøve kørte i én uafbrudt Chromium-session på et lokalt production-build fra før de sidste rettelser af væghjørners syn, restore-synsfelt, viewport og fjernelse af gamle baggrunde. Den blev ikke genstartet under arbejdet. Den endelige kamp-/navigationskode er efterfølgende dækket af alle 38 tests, 80 floor-gentagelser og det særskilte seks-minutters Auto-forløb på Vercel. Heap-målingen inkluderer videooptagelse og QA-data og er ikke en fuld analyse af memory leaks.
 
